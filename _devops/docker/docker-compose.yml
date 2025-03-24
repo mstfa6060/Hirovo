@@ -3,15 +3,15 @@ version: '3.8'
 services:
   hirovo-api:
     build:
-      context: ../../  # Projenin ana dizinine git
-      dockerfile: _devops/docker/Dockerfile  # Dockerfile’ın yeni yolu
+      context: ../../
+      dockerfile: _devops/docker/Dockerfile
     container_name: hirovo-api-container
     depends_on:
       - sqlserver
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"  # Artık sadece container içinden erişim var
     environment:
-      - ConnectionStrings__DefaultConnection=Server=Server=sql-server;Database=HirovoDb;User=sa;Password=FRAudnxd4rzcVPt;TrustServerCertificate=True;
+      - ConnectionStrings__DefaultConnection=Server=sql-server;Database=HirovoDb;User=sa;Password=FRAudnxd4rzcVPt;TrustServerCertificate=True;
     networks:
       - hirovo-network
 
@@ -25,6 +25,33 @@ services:
       - "1433:1433"
     networks:
       - hirovo-network
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - hirovo-api
+    networks:
+      - hirovo-network
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 6h & wait $${!}; certbot renew; done'"
+
+volumes:
+  certbot-etc:
+  certbot-var:
 
 networks:
   hirovo-network:
