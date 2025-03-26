@@ -25,7 +25,7 @@ builder.Services.AddCors(options =>
 // ArfBlocks Dependencies
 builder.Services.AddArfBlocks(options =>
 {
-    options.ApplicationProjectNamespace = "BaseModules.IAM.Application";
+    options.ApplicationProjectNamespace = "BusinessModules.Hirovo.Application";
     options.ConfigurationSection = builder.Configuration.GetSection("ProjectConfigurations");
     options.LogLevel = LogLevels.Warning;
     // options.PreOperateHandler = typeof(BaseModules.IAM.Application.DefaultHandlers.Operators.Commands.PreOperate.Handler);
