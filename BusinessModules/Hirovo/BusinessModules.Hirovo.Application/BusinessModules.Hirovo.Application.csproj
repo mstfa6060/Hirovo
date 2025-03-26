@@ -2,8 +2,8 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\BusinessModules.Job.Domain\BusinessModules.Job.Domain.csproj" />
-    <ProjectReference Include="..\BusinessModules.Job.Infrastructure\BusinessModules.Job.Infrastructure.csproj" />
+    <ProjectReference Include="..\BusinessModules.Hirovo.Domain\BusinessModules.Hirovo.Domain.csproj" />
+    <ProjectReference Include="..\BusinessModules.Hirovo.Infrastructure\BusinessModules.Hirovo.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

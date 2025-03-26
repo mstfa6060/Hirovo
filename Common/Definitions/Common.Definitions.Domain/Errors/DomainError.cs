@@ -201,5 +201,7 @@ public class DomainErrors
         public static string PasswordMustContainUppercase { get; set; } = "Şifre en az bir büyük harf içermelidir.";
         public static string PasswordMustContainLowercase { get; set; } = "Şifre en az bir küçük harf içermelidir.";
         public static string PasswordMustContainDigit { get; set; } = "Şifre en az bir rakam içermelidir.";
+        public static string UserNotFound { get; set; } = " Kullanıcı bulunamadı.";
+
     }
 }

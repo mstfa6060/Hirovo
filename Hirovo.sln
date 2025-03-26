@@ -47,15 +47,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs.RelationalDB.Migration
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BusinessModules", "BusinessModules", "{9DDA50E5-7C40-8D64-9153-BA390C772D55}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Job", "Job", "{C2C694A3-B3D2-01AD-BC90-93217C79098C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hirovo", "Hirovo", "{C2C694A3-B3D2-01AD-BC90-93217C79098C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessModules.Job.Api", "BusinessModules\Job\BusinessModules.Job.Api\BusinessModules.Job.Api.csproj", "{0D509C90-22EF-4212-9D0A-FAB02430B01B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessModules.Hirovo.Api", "BusinessModules\Hirovo\BusinessModules.Hirovo.Api\BusinessModules.Hirovo.Api.csproj", "{0D509C90-22EF-4212-9D0A-FAB02430B01B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessModules.Job.Application", "BusinessModules\Job\BusinessModules.Job.Application\BusinessModules.Job.Application.csproj", "{F1068145-053F-40A4-8641-1B738841336A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessModules.Hirovo.Application", "BusinessModules\Hirovo\BusinessModules.Hirovo.Application\BusinessModules.Hirovo.Application.csproj", "{F1068145-053F-40A4-8641-1B738841336A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessModules.Job.Domain", "BusinessModules\Job\BusinessModules.Job.Domain\BusinessModules.Job.Domain.csproj", "{35BDA92E-C344-404B-B0DA-ADE856D10F8C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessModules.Hirovo.Domain", "BusinessModules\Hirovo\BusinessModules.Hirovo.Domain\BusinessModules.Hirovo.Domain.csproj", "{35BDA92E-C344-404B-B0DA-ADE856D10F8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessModules.Job.Infrastructure", "BusinessModules\Job\BusinessModules.Job.Infrastructure\BusinessModules.Job.Infrastructure.csproj", "{CFC2D452-56ED-4709-A384-7DACD4F70531}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessModules.Hirovo.Infrastructure", "BusinessModules\Hirovo\BusinessModules.Hirovo.Infrastructure\BusinessModules.Hirovo.Infrastructure.csproj", "{CFC2D452-56ED-4709-A384-7DACD4F70531}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Services.ErrorCodeGenerator", "Common\Services\Common.Services.ErrorCodeGenerator\Common.Services.ErrorCodeGenerator.csproj", "{92546B8C-40F0-4C4B-B98D-10AA6CEAB5FF}"
 EndProject

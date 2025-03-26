@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BusinessModules.Job.Application\BusinessModules.Job.Application.csproj" />
+    <ProjectReference Include="..\BusinessModules.Hirovo.Application\BusinessModules.Hirovo.Application.csproj" />
   </ItemGroup>
 
 </Project>
