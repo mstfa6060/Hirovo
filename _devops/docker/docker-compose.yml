@@ -29,6 +29,18 @@ services:
     networks:
       - hirovo-network
 
+  api-gateway:
+    build:
+      context: ../../
+      dockerfile: _devops/docker/Dockerfile-api-gateway
+    container_name: hirovo-api-gateway
+    ports:
+      - "5000:5000"
+    depends_on:
+      - hirovo-api
+      - iam-api
+    networks:
+      - hirovo-network
 
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -53,7 +65,7 @@ services:
       - "80:80"
       - "443:443"
     depends_on:
-      - hirovo-api
+      - api-gateway
     networks:
       - hirovo-network
 

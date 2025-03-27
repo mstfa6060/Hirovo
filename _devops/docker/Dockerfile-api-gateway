@@ -1,0 +1,22 @@
+# Temel ASP.NET çalışma zamanı
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 5000
+
+# Build aşaması
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# API Gateway projesini kopyala
+COPY ../../Gateways/Api/Gateways.ApiGateway.Api ./Gateways.ApiGateway.Api
+
+# Restore ve publish işlemleri
+WORKDIR /src/Gateways.ApiGateway.Api
+RUN dotnet restore
+RUN dotnet publish -c Release -o /app/publish
+
+# Final image
+FROM base AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "Gateways.ApiGateway.Api.dll"]
