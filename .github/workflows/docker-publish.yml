@@ -25,7 +25,7 @@ jobs:
           context: .
           file: ./_devops/docker/Dockerfile-modules-iam
           push: true
-          tags: mstfa6060/hirovo-iam-api:latest
+          tags: mstfaock/hirovo-iam-api:latest
 
       - name: Build and push Worker Docker image
         uses: docker/build-push-action@v5
@@ -33,4 +33,4 @@ jobs:
           context: .
           file: ./_devops/docker/Dockerfile-modules-worker
           push: true
-          tags: mstfa6060/hirovo-worker-api:latest
+          tags: mstfaock/hirovo-worker-api:latest
