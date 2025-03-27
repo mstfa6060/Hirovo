@@ -4,16 +4,31 @@ services:
   hirovo-api:
     build:
       context: ../../
-      dockerfile: _devops/docker/Dockerfile
+      dockerfile: _devops/docker/Dockerfile-modules-worker
     container_name: hirovo-api-container
-    depends_on:
-      - sqlserver
-    expose:
-      - "8080"
+    ports:
+      - "8080:8080"
     environment:
       - ConnectionStrings__DefaultConnection=Server=sql-server;Database=HirovoDb;User=sa;Password=FRAudnxd4rzcVPt;TrustServerCertificate=True;
+    depends_on:
+      - sqlserver
     networks:
       - hirovo-network
+
+  iam-api:
+    build:
+      context: ../../
+      dockerfile: _devops/docker/Dockerfile-modules-iam
+    container_name: iam-api-container
+    ports:
+      - "8081:8081"
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sql-server;Database=HirovoDb;User=sa;Password=FRAudnxd4rzcVPt;TrustServerCertificate=True;
+    depends_on:
+      - sqlserver
+    networks:
+      - hirovo-network
+
 
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
