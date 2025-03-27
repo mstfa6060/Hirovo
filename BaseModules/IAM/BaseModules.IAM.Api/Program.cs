@@ -8,7 +8,7 @@ using BaseModules.IAM.Application.Configuration;
 var builder = WebApplication.CreateBuilder(args);
 
 // var configurations = builder.Configuration.GetSection("ProjectConfigurations").Get<ProjectConfigurations>();
-// var environmentService = new EnvironmentService(configurations.EnvironmentConfiguration);
+// var environmentService = new EnvironmentService(configurations.EnvironmentConfiguration); 
 
 string DefaultCorsPolicy = "DefaultCorsPolicy";
 builder.Services.AddCors(options =>
