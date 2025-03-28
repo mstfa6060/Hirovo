@@ -35,7 +35,7 @@ services:
       dockerfile: _devops/docker/Dockerfile-api-gateway
     container_name: hirovo-api-gateway
     ports:
-      - "5000:5000"
+      - "5000:8080"
     depends_on:
       - hirovo-api
       - iam-api
