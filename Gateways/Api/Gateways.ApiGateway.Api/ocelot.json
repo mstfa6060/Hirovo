@@ -5,7 +5,7 @@
 			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
-					"Host": "hirovo-iam-service",
+					"Host": "iam-api-container",
 					"Port": 80
 				}
 			],
@@ -19,7 +19,7 @@
 			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
-					"Host": "hirovo-iam-service",
+					"Host": "iam-api-container",
 					"Port": 80
 				}
 			],
@@ -36,7 +36,7 @@
 			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
-					"Host": "hirovo-worker-service",
+					"Host": "hirovo-api-container",
 					"Port": 80
 				}
 			],

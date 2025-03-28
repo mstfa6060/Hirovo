@@ -1,19 +1,34 @@
 {
   "Routes": [
     {
+      "DownstreamPathTemplate": "/auth/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "iam-api-container",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/iam/auth/{everything}",
+      "UpstreamHttpMethod": [
+        "POST"
+      ]
+    },
+    {
       "DownstreamPathTemplate": "/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "hirovo-iam-service",
+          "Host": "iam-api-container",
           "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/iam/{everything}",
-      "UpstreamHttpMethod": [],
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "5V-3TKad=*+9qFRp!%Ee7?a5#qQm7t9rHe%Ejg2*J4@EZ!@U02",
-        "AllowedScopes": []
+        "AuthenticationProviderKey": "5V-3TKad=*+9qFRp!%Ee7?a5#qQm7t9rHe%Ejg2*J4@EZ!@U02"
       }
     },
     {
@@ -21,20 +36,21 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "hirovo-worker-service",
+          "Host": "hirovo-api-container",
           "Port": 80
         }
       ],
-      "UpstreamPathTemplate": "/worker/{everything}",
-      "UpstreamHttpMethod": [],
+      "UpstreamPathTemplate": "/hirovo/{everything}",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "5V-3TKad=*+9qFRp!%Ee7?a5#qQm7t9rHe%Ejg2*J4@EZ!@U02",
-        "AllowedScopes": []
+        "AuthenticationProviderKey": "5V-3TKad=*+9qFRp!%Ee7?a5#qQm7t9rHe%Ejg2*J4@EZ!@U02"
       }
     }
   ],
   "GlobalConfiguration": {
     "RequestIdKey": "OcRequestId",
-    "BaseUrl": "http://localhost:5000"
+    "BaseUrl": "http://infrastructure-api-gateway-service"
   }
 }
