@@ -6,7 +6,7 @@
 			"DownstreamHostAndPorts": [
 				{
 					"Host": "iam-api-container",
-					"Port": 80
+					"Port": 8080
 				}
 			],
 			"UpstreamPathTemplate": "/iam/auth/{everything}",
@@ -20,7 +20,7 @@
 			"DownstreamHostAndPorts": [
 				{
 					"Host": "iam-api-container",
-					"Port": 80
+					"Port": 8080
 				}
 			],
 			"UpstreamPathTemplate": "/iam/{everything}",
@@ -37,7 +37,7 @@
 			"DownstreamHostAndPorts": [
 				{
 					"Host": "hirovo-api-container",
-					"Port": 80
+					"Port": 8080
 				}
 			],
 			"UpstreamPathTemplate": "/hirovo/{everything}",
