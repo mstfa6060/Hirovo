@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   hirovo-api:
-    build:
-      context: ../../
-      dockerfile: _devops/docker/Dockerfile-modules-worker
+    image: mstfaock/hirovo-worker-api:latest
     container_name: hirovo-api-container
     ports:
       - "8080:8080"
@@ -16,9 +14,7 @@ services:
       - hirovo-network
 
   iam-api:
-    build:
-      context: ../../
-      dockerfile: _devops/docker/Dockerfile-modules-iam
+    image: mstfaock/hirovo-iam-api:latest
     container_name: iam-api-container
     ports:
       - "8081:8080"
@@ -30,9 +26,7 @@ services:
       - hirovo-network
 
   api-gateway:
-    build:
-      context: ../../
-      dockerfile: _devops/docker/Dockerfile-api-gateway
+    image: mstfaock/hirovo-api-gateway:latest
     container_name: hirovo-api-gateway
     ports:
       - "5000:8080"
