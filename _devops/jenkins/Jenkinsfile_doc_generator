@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    environment {
+        DOTNET_ROOT = "/root/.dotnet"
+        PATH = "/root/.dotnet/tools:$PATH"
+    }
+
+    stages {
+        stage('Install ArfBlocks CLI') {
+            steps {
+                sh 'dotnet tool install --global Arfware.ArfBlocks-cli --version 2.0.0 || true'
+            }
+        }
+
+        stage('Create Output Folders') {
+            steps {
+                sh 'mkdir -p webapp/common/hirovo-api/src/api/base_modules/iam'
+                sh 'mkdir -p webapp/common/hirovo-api/src/api/business_modules/workers'
+            }
+        }
+
+        stage('Generate IAM Docs') {
+            steps {
+                sh 'arfblocks-cli exec --file _devops/arfblocks-cli/iam.arfblocks-cli.json'
+            }
+        }
+
+        stage('Generate Workers Docs') {
+            steps {
+                sh 'arfblocks-cli exec --file _devops/arfblocks-cli/hirovo.arfblocks-cli.json'
+            }
+        }
+    }
+}
