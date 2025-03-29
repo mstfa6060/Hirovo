@@ -1,0 +1,38 @@
+{
+  "project": "Hirovo API",
+  "commands": [
+    {
+      "name": "generate-docs",
+      "parameters": [
+        {
+          "key": "targetProject",
+          "value": "BusinessModules/Hirovo/BusinessModules.Hirovo.Application/BusinessModules.Hirovo.Application.csproj"
+        },
+        {
+          "key": "output",
+          "value": "../../webapp/common/hirovo-api/src/api/business_modules/workers"
+        },
+        {
+          "key": "outputImports",
+          "value": "// Imports \nimport { AppConfig, api as axios } from 'maden-config'; \nimport { ApiService } from '../../../services';"
+        },
+        {
+          "key": "outputTypes",
+          "value": "// Custom Types \ntype Guid = string; \ntype Double = number;"
+        },
+        {
+          "key": "outputSettings",
+          "value": "// Settings..."
+        },
+        {
+          "key": "nameSpace",
+          "value": "WorkersAPI"
+        },
+        {
+          "key": "requestUrl",
+          "value": "AppConfig.HirovoUrl"
+        }
+      ]
+    }
+  ]
+}
