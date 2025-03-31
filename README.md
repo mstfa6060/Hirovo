@@ -1,4 +1,4 @@
-# Hirovo Backend1
+# Hirovo Backend
 
 Bu repo, Hirovo platformunun .NET 8 ve Docker tabanlı backend servislerini içermektedir. API katmanı ArfBlocks mimarisiyle oluşturulmuş ve tamamen RESTful yaklaşımla geliştirilmiştir.
 
