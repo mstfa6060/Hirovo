@@ -70,6 +70,19 @@ services:
       - certbot-etc:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 6h & wait $${!}; certbot renew; done'"
+  
+  jenkins:
+    build:
+      context: .
+      dockerfile: _devops/docker/Dockerfile-jenkins-dotnet
+    container_name: jenkins
+    ports:
+      - "8082:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    networks:
+      - hirovo-network
 
 volumes:
   certbot-etc:
