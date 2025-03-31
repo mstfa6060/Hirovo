@@ -87,6 +87,7 @@ services:
 volumes:
   certbot-etc:
   certbot-var:
+  jenkins_home:
 
 networks:
   hirovo-network:
