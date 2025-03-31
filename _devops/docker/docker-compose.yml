@@ -74,7 +74,7 @@ services:
   jenkins:
     build:
       context: .
-      dockerfile: _Dockerfile-jenkins-dotnet
+      dockerfile: Dockerfile-jenkins-dotnet
     container_name: jenkins
     ports:
       - "8082:8080"
