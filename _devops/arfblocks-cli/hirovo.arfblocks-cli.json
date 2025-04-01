@@ -10,7 +10,7 @@
         },
         {
           "key": "output",
-          "value": "../../webapp/common/hirovo-api/src/api/business_modules/hirovo"
+          "value": "artifacts/cli-output/business_modules/hirovo"
         },
         {
           "key": "outputImports",

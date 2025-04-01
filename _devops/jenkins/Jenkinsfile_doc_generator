@@ -38,14 +38,7 @@ pipeline {
                 sh 'dotnet tool run arfblocks-cli exec --file _devops/arfblocks-cli/hirovo.arfblocks-cli.json'
             }
         }
-
-        stage('Prepare Config Files') {
-            steps {
-                sh '''
-                    cp Hirovo.ApiWithMiddleware/appsettings.json _devops/docker/appsettings.json
-                '''
-            }
-        }
+ 
 
         stage('Docker Build & Push') {
             steps {
