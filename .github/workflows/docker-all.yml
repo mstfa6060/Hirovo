@@ -27,13 +27,13 @@ jobs:
           push: true
           tags: mstfaock/hirovo-iam-api:latest
 
-      - name: Build and push Worker Docker image
+      - name: Build and push Hirovo Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./_devops/docker/Dockerfile-modules-worker
+          file: ./_devops/docker/Dockerfile-modules-hirovo
           push: true
-          tags: mstfaock/hirovo-worker-api:latest
+          tags: mstfaock/hirovo-hirovo-api:latest
 
       - name: Build and push API Gateway Docker image
         uses: docker/build-push-action@v5

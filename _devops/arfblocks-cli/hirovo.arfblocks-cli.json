@@ -10,12 +10,12 @@
         },
         {
           "key": "output",
-          "value": "../../webapp/common/hirovo-api/src/api/business_modules/workers"
+          "value": "../../webapp/common/hirovo-api/src/api/business_modules/hirovo"
         },
         {
           "key": "outputImports",
           "value": "// Imports \nimport { AppConfig, api as axios } from 'maden-config'; \nimport { ApiService } from '../../../services';"
-        },  
+        },
         {
           "key": "outputTypes",
           "value": "// Custom Types \ntype Guid = string; \ntype Double = number;"
@@ -26,7 +26,7 @@
         },
         {
           "key": "nameSpace",
-          "value": "WorkersAPI"
+          "value": "HirovosAPI"
         },
         {
           "key": "requestUrl",

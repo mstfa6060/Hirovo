@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   hirovo-api:
-    image: mstfaock/hirovo-worker-api:latest
+    image: mstfaock/hirovo-api:latest
     container_name: hirovo-api-container
     ports:
       - "8080:8080"
