@@ -21,11 +21,11 @@ pipeline {
         stage('Create CLI Output Folders') {
             steps {
                 sh '''
-                    mkdir -p artifacts/cli-output/iam
-                    mkdir -p artifacts/cli-output/workers
+                    mkdir -p artifacts/cli-output/base_modules/iam
+                    mkdir -p artifacts/cli-output/business_modules/hirovo   
                 '''
             }
-        }
+        } 
 
         stage('Generate IAM Docs') {
             steps {
