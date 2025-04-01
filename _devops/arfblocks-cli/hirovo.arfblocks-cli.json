@@ -15,7 +15,7 @@
         {
           "key": "outputImports",
           "value": "// Imports \nimport { AppConfig, api as axios } from 'maden-config'; \nimport { ApiService } from '../../../services';"
-        },
+        },  
         {
           "key": "outputTypes",
           "value": "// Custom Types \ntype Guid = string; \ntype Double = number;"
