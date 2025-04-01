@@ -39,13 +39,37 @@ pipeline {
             }
         }
 
-        stage('Docker Build & Push') {
+        stage('Docker Build & Push - Hirovo API') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker build -t $DOCKER_IMAGE_NAME:latest -f $DOCKERFILE_PATH $BUILD_CONTEXT
-                        docker push $DOCKER_IMAGE_NAME:latest
+                        docker build -t mstfaock/hirovo-api:latest -f _devops/docker/Dockerfile-modules-hirovo .
+                        docker push mstfaock/hirovo-api:latest
+                    '''
+                }
+            }
+        }
+
+        stage('Docker Build & Push - IAM API') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker build -t mstfaock/hirovo-iam-api:latest -f _devops/docker/Dockerfile-modules-iam .
+                        docker push mstfaock/hirovo-iam-api:latest
+                    '''
+                }
+            }
+        }
+
+        stage('Docker Build & Push - API Gateway') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker build -t mstfaock/hirovo-api-gateway:latest -f _devops/docker/Dockerfile-api-gateway .
+                        docker push mstfaock/hirovo-api-gateway:latest
                     '''
                 }
             }
