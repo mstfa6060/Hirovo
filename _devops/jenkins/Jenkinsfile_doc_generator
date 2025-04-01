@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE_NAME = "mstfa6060/hirovo-api"
+        DOCKER_IMAGE_NAME = "mstfaock/hirovo-api"
         DOCKERFILE_PATH = "_devops/docker/Dockerfile-modules-hirovo"
         BUILD_CONTEXT = "."
     }
