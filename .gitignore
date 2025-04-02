@@ -16,5 +16,6 @@ TestResults/
 *.user
 *.sln.docstates
 
-# Dokümantasyon SSH anahtarı (GIT'e eklenmemeli)
+# Dokümantasyon SSH anahtarı
+_devops/ssh/id_rsa_mobileapp
 _devops/ssh/

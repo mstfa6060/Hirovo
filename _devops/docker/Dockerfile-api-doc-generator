@@ -1,50 +1,59 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0
 
-RUN apt-get update && apt-get install -y openssh-client git
+# Gerekli paketleri yükle
+RUN apt-get update && apt-get install -y \
+    openssh-client \
+    git
 
-# SSH ayarları
+# SSH klasörü oluştur
 RUN mkdir -p /root/.ssh
 COPY _devops/ssh/id_rsa_mobileapp /root/.ssh/id_rsa
 RUN chmod 600 /root/.ssh/id_rsa
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
-# Projeyi içeri al
+# Proje kaynaklarını kopyala
 COPY . /src/backend
 WORKDIR /src/backend
 
-# ArfBlocks CLI
+# ArfBlocks CLI yükle
 RUN dotnet tool install --global Arfware.ArfBlocks-cli --version 2.0.0
-ENV PATH="${PATH}:/root/.dotnet/tools"
+ENV PATH="$PATH:/root/.dotnet/tools"
 
-# Git config
+# GIT ayarları (CI/BOT için)
 RUN git config --global pull.rebase false
 RUN git config --global user.name "CI/CD-BOT"
 RUN git config --global user.email "bot@hirovo.com"
 RUN git config --global push.default matching
 RUN git config --global http.sslVerify false
 
-# WebApp'i klonla
-RUN git clone git@github.com:mstfa6060/maden-frontend.git /src/webapp/ --branch main
+# Webapp ve MobileApp klasörlerini sistemden kopyala (sunucuya özel)
+COPY /maden/maden-frontend /src/webapp
+COPY /maden/mobileapp /src/mobileapp
 
-# ArfBlocks CLI üret
+# Eksik dizinleri oluştur (ArfBlocks çıktısı için)
+RUN mkdir -p /src/webapp/common/hirovo-api/src/api/business_modules/hirovo
+RUN mkdir -p /src/webapp/common/hirovo-api/src/api/base_modules/iam
+
+# Hirovo endpointlerini üret
 RUN arfblocks-cli exec --file /src/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
+
+# IAM endpointlerini üret
 RUN arfblocks-cli exec --file /src/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
 
-# WebApp'e git işlemleri
+# Web frontend'e git ve push et
 WORKDIR /src/webapp
 RUN git add .
 RUN git commit -m "API: Hirovo + IAM API docs updated #skipci" || true
 RUN git pull
 RUN git push
 
-# Mobile kopyalama
-RUN git clone git@github.com:mstfa6060/mobileapp.git /src/mobileapp/ --branch main
+# Mobile frontend'e git ve dosyaları kopyala & push et
 WORKDIR /src/mobileapp
 RUN mkdir -p common/hirovo-api/docs/business_modules/hirovo
 RUN mkdir -p common/hirovo-api/docs/base_modules/iam
 RUN cp /src/webapp/common/hirovo-api/src/api/business_modules/hirovo/index.ts common/hirovo-api/docs/business_modules/hirovo/index.ts
 RUN cp /src/webapp/common/hirovo-api/src/api/base_modules/iam/index.ts common/hirovo-api/docs/base_modules/iam/index.ts
 RUN git add .
-RUN git commit -m "API: Copied Hirovo + IAM API docs to mobileapp #skipci" || true
+RUN git commit -m "API: Hirovo + IAM docs updated for mobile #skipci" || true
 RUN git pull
 RUN git push
