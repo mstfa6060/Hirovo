@@ -27,8 +27,8 @@ RUN git config --global push.default matching
 RUN git config --global http.sslVerify false
 
 # Webapp ve MobileApp klasörlerini sistemden kopyala (sunucuya özel)
-COPY /maden/maden-frontend /src/webapp
-COPY /maden/mobileapp /src/mobileapp
+COPY _devops/tmp/webapp /src/webapp
+COPY _devops/tmp/mobileapp /src/mobileapp
 
 # Eksik dizinleri oluştur (ArfBlocks çıktısı için)
 RUN mkdir -p /src/webapp/common/hirovo-api/src/api/business_modules/hirovo

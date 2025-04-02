@@ -3,23 +3,26 @@ pipeline {
 
     environment {
         TAG = "${BUILD_NUMBER}_COM${env.GIT_COMMIT.substring(0, 6)}"
+        NAMESPACE = 'maden-staging'
     }
 
     stages {
+        stage('Prepare Web/Mobile Context') {
+            steps {
+                sh '''
+                    mkdir -p ./_devops/tmp/webapp
+                    mkdir -p ./_devops/tmp/mobileapp
+
+                    cp -r /maden/maden-frontend/* ./_devops/tmp/webapp/
+                    cp -r /maden/mobileapp/* ./_devops/tmp/mobileapp/
+                '''
+            }
+        }
+
         stage('API Documentation Generator') {
             steps {
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'dockerhub-credentials',
-                        usernameVariable: 'USERNAME',
-                        passwordVariable: 'PASSWORD'
-                    ),
-                    sshUserPrivateKey(
-                        credentialsId: 'mobileapp-ssh-key',
-                        keyFileVariable: 'SSH_KEY_PATH',
-                        usernameVariable: 'SSH_USER'
-                    )
-                ]) {
+                withCredentials([file(credentialsId: 'mobileapp-ssh-key', variable: 'SSH_KEY_PATH'), 
+                                 usernamePassword(credentialsId: 'frontend-access', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     sh '''
                         mkdir -p _devops/ssh
                         cp "$SSH_KEY_PATH" _devops/ssh/id_rsa_mobileapp
@@ -36,6 +39,26 @@ pipeline {
                 }
             }
         }
+
+        stage('Clear Produced Dangling Containers/Layers') {
+            steps {
+                sh("docker images | grep '<none>' | awk '{print \$3}' | xargs -I {} docker rmi -f {} || true")
+                sh("docker images | grep 'registry.git.hirovo.com.tr' | awk '{print \$3}' | xargs -I {} docker rmi -f {} || true")
+                sh("docker system prune --all -f")
+            }
+        }
+
+        stage('Send Success Mail') {
+            steps {
+                sh("echo '✅ Hirovo API Docs Pipeline Success'")
+                mail(
+                    body: "✔ Hirovo: ArfBlocks API dokümantasyonu başarıyla oluşturuldu ve frontend/mobile repo'lara gönderildi. Tag: ${TAG}",
+                    from: 'bot@hirovo.com',
+                    subject: 'Jenkins: Hirovo API Docs Oluşturma Başarılı',
+                    to: 'dev@hirovo.com'
+                )
+            }
+        }
     }
 
     post {
@@ -44,6 +67,12 @@ pipeline {
         }
         failure {
             sh("echo '❌ Pipeline Failed'")
+            mail(
+                body: "🚨 HATA: Hirovo API dokümantasyonu oluşturulamadı! Tag: ${TAG}",
+                from: 'bot@hirovo.com',
+                subject: 'Jenkins - Uyarı: Hirovo API Docs Oluşturma Başarısız',
+                to: 'dev@hirovo.com'
+            )
         }
     }
 }
