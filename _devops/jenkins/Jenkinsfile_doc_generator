@@ -40,39 +40,52 @@ pipeline {
         }
 
         stage('Push ArfBlocks Docs to Frontend & Mobile') {
-            steps {
-                withCredentials([ 
-                    sshUserPrivateKey(credentialsId: 'mobileapp-deploy-key', keyFileVariable: 'SSH_KEY_PATH', usernameVariable: 'SSH_USERNAME'), 
-                    usernamePassword(credentialsId: 'c1cec859-9a72-4a26-a997-a8ce7c6189e9', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
-                ])  {
-                    sh '''
-                        export GIT_SSH_COMMAND="ssh -i $SSH_KEY_PATH -o StrictHostKeyChecking=no"
+    steps {
+        withCredentials([ 
+            sshUserPrivateKey(credentialsId: 'mobileapp-deploy-key', keyFileVariable: 'SSH_KEY_PATH', usernameVariable: 'SSH_USERNAME'), 
+            usernamePassword(credentialsId: 'c1cec859-9a72-4a26-a997-a8ce7c6189e9', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+        ])  {
+            sh '''
+                export GIT_SSH_COMMAND="ssh -i $SSH_KEY_PATH -o StrictHostKeyChecking=no"
 
-                        cd _devops/tmp/webapp
-                        git init
-                        git remote remove origin || true
-                        git remote add origin git@github.com:mstfa6060/maden-frontend.git
-                        git checkout -B main
-                        git config user.name "CI/CD-BOT"
-                        git config user.email "bot@hirovo.com"
-                        git add .
-                        git commit -m "📦 ArfBlocks API dokümantasyonu güncellendi - $TAG"
-                        git push origin main --force
+                # Webapp push
+                cd _devops/tmp/webapp
+                git init
+                git remote remove origin || true
+                git remote add origin git@github.com:mstfa6060/maden-frontend.git
+                git checkout -B main
+                git config user.name "CI/CD-BOT"
+                git config user.email "bot@hirovo.com"
+                
+                if [ -n "$(git status --porcelain)" ]; then
+                    git add .
+                    git commit -m "📦 ArfBlocks API dokümantasyonu güncellendi - $TAG"
+                    git push origin main --force
+                else
+                    echo "⚠️ No changes to commit for webapp"
+                fi
 
-                        cd ../mobileapp
-                        git init
-                        git remote remove origin || true
-                        git remote add origin git@github.com:mstfa6060/mobileapp.git
-                        git checkout -B main
-                        git config user.name "CI/CD-BOT"
-                        git config user.email "bot@hirovo.com"
-                        git add .
-                        git commit -m "📦 Mobil API dokümantasyonu güncellendi - $TAG"
-                        git push origin main --force
-                    '''
-                }
-            }
+                # Mobileapp push
+                cd ../mobileapp
+                git init
+                git remote remove origin || true
+                git remote add origin git@github.com:mstfa6060/mobileapp.git
+                git checkout -B main
+                git config user.name "CI/CD-BOT"
+                git config user.email "bot@hirovo.com"
+                
+                if [ -n "$(git status --porcelain)" ]; then
+                    git add .
+                    git commit -m "📦 Mobil API dokümantasyonu güncellendi - $TAG"
+                    git push origin main --force
+                else
+                    echo "⚠️ No changes to commit for mobileapp"
+                fi
+            '''
         }
+    }
+}
+
 
         stage('Clear Produced Dangling Containers/Layers') {
             steps {
