@@ -24,7 +24,7 @@ RUN git config --global push.default matching
 RUN git config --global http.sslVerify false
 
 # WebApp'i klonla
-RUN git clone git@github.com:mstfa6060/maden-frontend.git /src/webapp/ --branch dev
+RUN git clone git@github.com:mstfa6060/maden-frontend.git /src/webapp/ --branch main
 
 # ArfBlocks CLI üret
 RUN arfblocks-cli exec --file /src/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
@@ -38,7 +38,7 @@ RUN git pull
 RUN git push
 
 # Mobile kopyalama
-RUN git clone git@github.com:mstfa6060/mobileapp.git /src/mobileapp/ --branch dev
+RUN git clone git@github.com:mstfa6060/mobileapp.git /src/mobileapp/ --branch main
 WORKDIR /src/mobileapp
 RUN mkdir -p common/hirovo-api/docs/business_modules/hirovo
 RUN mkdir -p common/hirovo-api/docs/base_modules/iam
