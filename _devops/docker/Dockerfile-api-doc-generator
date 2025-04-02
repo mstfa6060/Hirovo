@@ -3,6 +3,13 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 # Gerekli paketler
 RUN apt-get update && apt-get install -y openssh-client git
 
+# SSH key kopyala ve izinleri ayarla
+COPY _devops/ssh/id_rsa_mobileapp /root/.ssh/id_rsa
+RUN chmod 600 /root/.ssh/id_rsa
+
+# GitHub hostunu bilinenlere ekle
+RUN mkdir -p /root/.ssh && ssh-keyscan github.com >> /root/.ssh/known_hosts
+
 # Proje dosyalarını kopyala
 COPY . /src/backend
 WORKDIR /src/backend
@@ -17,9 +24,6 @@ RUN git config --global user.name "CI/CD-BOT"
 RUN git config --global user.email "bot@hirovo.com"
 RUN git config --global push.default matching
 RUN git config --global http.sslVerify false
-
-# SSH için bilinen hostlara GitHub'ı ekle
-RUN mkdir -p /root/.ssh && ssh-keyscan github.com >> /root/.ssh/known_hosts
 
 # Frontend WebApp Repo Klonla
 RUN git clone git@github.com:mstfa6060/maden-frontend.git /src/webapp/ --branch dev
