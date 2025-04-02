@@ -13,10 +13,17 @@ RUN mkdir -p /root/.ssh
 RUN dotnet tool install --global Arfware.ArfBlocks-cli --version 2.0.0
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
-# Çalışma dizini
-WORKDIR /src/backend
+# GIT ayarları
+ARG git_username
+ARG git_password
+RUN git config --global user.name "CI/CD-BOT"
+RUN git config --global user.email "bot@hirovo.com"
+RUN git config --global pull.rebase false
+RUN git config --global push.default matching
+RUN git config --global http.sslVerify false
 
-# Projeyi kopyala
+# Backend kaynaklarını kopyala
+WORKDIR /src/backend
 COPY . .
 
 # SSH key'i kopyala (Jenkins pipeline’dan geliyor)
@@ -30,15 +37,14 @@ RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 RUN mkdir -p /src/webapp/common/hirovo-api/src/api/business_modules/hirovo
 RUN mkdir -p /src/webapp/common/hirovo-api/src/api/base_modules/iam
 
-# Hirovo API dokümantasyonunu üret
+# Hirovo modülü ArfBlocks dökümanını oluştur
 RUN arfblocks-cli exec --file /src/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
 
-# IAM API dokümantasyonunu üret
+# IAM modülü ArfBlocks dökümanını oluştur
 RUN arfblocks-cli exec --file /src/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
 
-# 📦 ÖNEMLİ: Üretilen dokümantasyonu host makineye kopyala
-# webapp → pipeline klasörüne
-RUN cp -r /src/webapp/common /src/backend/_devops/tmp/webapp/
+# ErrorCode Export işlemini çalıştır
+RUN dotnet run --project Jobs/SpecialPurpose/DevTasks/ErrorCodeExporter/
 
-# mobileapp için de varsa buraya eklenir:
-# RUN cp -r /src/mobileapp/common /src/backend/_devops/tmp/mobileapp/
+# Üretilen dosyaları frontend ve mobile dizinlerine kopyala
+RUN cp -r /src/webapp/common /src/backend/_devops/tmp/webapp/
