@@ -1,5 +1,8 @@
 {
-  "project": "Hirovo IAM API",
+  "minCliVersion": "2.0.0",
+  "project": "Hirovo Platform - IAM Modülü",
+  "description": "IAM modülünün ArfBlocks ile frontend dokümantasyonunu oluşturur.",
+  "company": "Hirovo",
   "commands": [
     {
       "name": "generate-docs",
@@ -10,15 +13,15 @@
         },
         {
           "key": "output",
-          "value": "artifacts/cli-output/base_modules/iam"
+          "value": "../webapp/common/hirovo-api/src/api/base_modules/iam"
         },
         {
           "key": "outputImports",
-          "value": "// Imports \nimport { AppConfig, api as axios } from \"maden  -config\";\nimport { ApiService } from \"../../../services\";"
+          "value": "// Imports\nimport { AppConfig, api as axios } from 'hirovo-config';\nimport { ApiService } from '../../../services';"
         },
         {
           "key": "outputTypes",
-          "value": "// Custom Types \ntype Guid = string; \ntype Double = number;"
+          "value": "// Custom Types\ntype Guid = string;\ntype Double = number;"
         },
         {
           "key": "outputSettings",
@@ -30,7 +33,7 @@
         },
         {
           "key": "requestUrl",
-          "value": "AppConfig.IAMUrl"
+          "value": "AppConfig.IamUrl"
         }
       ]
     }

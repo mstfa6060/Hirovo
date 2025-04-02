@@ -1,0 +1,107 @@
+pipeline {
+    agent any
+
+    environment {
+        TAG = "${BUILD_NUMBER}-${env.GIT_COMMIT.substring(0, 6)}"
+        NAMESPACE = 'maden-staging'
+    }
+
+    stages {
+        stage('Setup parameters') {
+            steps {
+                script {
+                    properties([
+                        parameters([
+                            choice(
+                                choices: ['DEFAULT', 'SKIPTEST'],
+                                name: 'MODE'
+                            )
+                        ])
+                    ])
+                }
+            }
+        }
+
+        stage('HIROVO_MODULE') {
+            stages {
+                stage('HIROVO_MODULE - Build/Push Image') {
+                    steps {
+                        sh("""
+                            docker build \
+                            --build-arg MODE=${params.MODE} \
+                            -t registry.git.hirovo.com.tr/hirovo/modules-hirovo:$TAG \
+                            -f _devops/docker/Dockerfile-modules-hirovo .
+
+                            docker push registry.git.hirovo.com.tr/hirovo/modules-hirovo:$TAG
+                        """)
+                    }
+                }
+            }
+        }
+
+        stage('Git - Change Image Tag in Kustomize Templates') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'hirovo-git-access-token',
+                    usernameVariable: 'USERNAME',
+                    passwordVariable: 'PASSWORD'
+                )]) {
+                    sh '''
+                    rm -rf temp || true
+                    git clone --depth 1 https://$USERNAME:$PASSWORD@github.com/mstfa6060/maden-k8s.git temp/
+                    cd temp
+                    git config pull.rebase false
+                    git config --global user.name "CI/CD-BOT"
+                    git config --global user.email "bot@hirovo.com"
+                    git config --global push.default matching
+
+                    sed -i -E "s/(newTag:(.))[^ ]*/newTag: ${TAG}/g" ./modules-hirovo/overlays/staging/backend/kustomization.yaml
+                    sed -i -E "s/(newTag:(.))[^ ]*/newTag: ${TAG}/g" ./modules-hirovo/overlays/production/backend/kustomization.yaml
+
+                    kubectl apply -k ./modules-hirovo/overlays/staging
+
+                    git add ./modules-hirovo/overlays/staging/backend/kustomization.yaml
+                    git add ./modules-hirovo/overlays/production/backend/kustomization.yaml
+
+                    git commit -m "DevOps: Auto-Tagged ${TAG} Hirovo Module by CI/CD-BOT #skipci" || true
+                    git pull
+                    git push
+                    '''
+                }
+            }
+        }
+
+        stage('Trigger Model Generation Pipeline') {
+            steps {
+                sh("curl -X POST https://jenkins.hirovo.com.tr/job/Hirovo-Doc-Generator/build?token=hirovo-doc-generator")
+            }
+        }
+
+        stage('Send Success') {
+            steps {
+                sh("echo '✅ Hirovo Main Pipeline Success'")
+                mail(
+                    body: "✔ Hirovo: Tüm modüller başarıyla build edildi, pushlandı ve staging'e deploy edildi. Tag: ${TAG}",
+                    from: 'bot@hirovo.com',
+                    subject: 'Jenkins: Hirovo Backend Pipeline Başarılı',
+                    to: 'dev@hirovo.com'
+                )
+            }
+        }
+    }
+
+    post {
+        always {
+            sh("echo '⏹ Pipeline Completed'")
+        }
+        failure {
+            sh("echo '❌ Pipeline Failed'")
+            mail(
+                body: "🚨 HATA: Hirovo pipeline başarısız oldu! Tag: ${TAG}",
+                from: 'bot@hirovo.com',
+                subject: 'Jenkins - Uyarı: Hirovo Backend Pipeline Başarısız',
+                to: 'dev@hirovo.com'
+            )
+        }
+    }
+}

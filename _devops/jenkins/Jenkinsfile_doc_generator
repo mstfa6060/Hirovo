@@ -2,77 +2,62 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE_NAME = "mstfaock/hirovo-api"
-        DOCKERFILE_PATH = "_devops/docker/Dockerfile-modules-hirovo"
-        BUILD_CONTEXT = "."
+        TAG = "${BUILD_NUMBER}_COM${env.GIT_COMMIT.substring(0, 6)}"
+        NAMESPACE = 'maden-staging'
     }
 
     stages {
-        stage('Prepare ArfBlocks CLI') {
+        stage('API Documentation Generator') {
             steps {
-                sh '''
-                    dotnet new tool-manifest || true
-                    dotnet tool install Arfware.ArfBlocks-cli --version 2.0.0 || true
-                    dotnet tool restore
-                '''
-            }
-        }
-
-        stage('Create CLI Output Folders') {
-            steps {
-                sh '''
-                    mkdir -p artifacts/cli-output/base_modules/iam
-                    mkdir -p artifacts/cli-output/business_modules/hirovo
-                '''
-            }
-        }
-
-        stage('Generate IAM Docs') {
-            steps {
-                sh 'dotnet tool run arfblocks-cli exec --file _devops/arfblocks-cli/iam.arfblocks-cli.json'
-            }
-        }
-
-        stage('Generate Hirovo Docs') {
-            steps {
-                sh 'dotnet tool run arfblocks-cli exec --file _devops/arfblocks-cli/hirovo.arfblocks-cli.json'
-            }
-        }
-
-        stage('Docker Build & Push - Hirovo API') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh '''
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker build -t mstfaock/hirovo-api:latest -f _devops/docker/Dockerfile-modules-hirovo .
-                        docker push mstfaock/hirovo-api:latest
-                    '''
+                withCredentials([usernamePassword(
+                        credentialsId: 'hirovo-git-access-token',
+                        usernameVariable: 'USERNAME',
+                        passwordVariable: 'PASSWORD'
+                    )]) {
+                        sh("""
+                            docker build \
+                            -t registry.git.hirovo.com.tr/arfblocks-cli:$TAG \
+                            --build-arg git_username=$USERNAME \
+                            --build-arg git_password=$PASSWORD \
+                            -f _devops/docker/Dockerfile-api-doc-generator .
+                        """)
                 }
             }
         }
 
-        stage('Docker Build & Push - IAM API') {
+        stage('Clear Produced Dangling Containers/Layers') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh '''
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker build -t mstfaock/hirovo-iam-api:latest -f _devops/docker/Dockerfile-modules-iam .
-                        docker push mstfaock/hirovo-iam-api:latest
-                    '''
-                }
+                sh("docker images | grep '<none>' | awk '{print \$3}' | xargs -I {} docker rmi -f {} || true")
+                sh("docker images | grep 'registry.git.hirovo.com.tr' | awk '{print \$3}' | xargs -I {} docker rmi -f {} || true")
+                sh("docker system prune --all -f")
             }
         }
 
-        stage('Docker Build & Push - API Gateway') {
+        stage('Send Success Mail') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh '''
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker build -t mstfaock/hirovo-api-gateway:latest -f _devops/docker/Dockerfile-api-gateway .
-                        docker push mstfaock/hirovo-api-gateway:latest
-                    '''
-                }
+                sh("echo '✅ Hirovo API Docs Pipeline Success'")
+                mail(
+                    body: "✔ Hirovo: ArfBlocks API dokümantasyonu başarıyla oluşturuldu ve frontend repo'lara gönderildi. Tag: ${TAG}",
+                    from: 'bot@hirovo.com',
+                    subject: 'Jenkins: Hirovo API Docs Oluşturma Başarılı',
+                    to: 'dev@hirovo.com'
+                )
             }
+        }
+    }
+
+    post {
+        always {
+            sh("echo '⏹ Pipeline Completed'")
+        }
+        failure {
+            sh("echo '❌ Pipeline Failed'")
+            mail(
+                body: "🚨 HATA: Hirovo API dokümantasyonu oluşturulamadı! Tag: ${TAG}",
+                from: 'bot@hirovo.com',
+                subject: 'Jenkins - Uyarı: Hirovo API Docs Oluşturma Başarısız',
+                to: 'dev@hirovo.com'
+            )
         }
     }
 }
