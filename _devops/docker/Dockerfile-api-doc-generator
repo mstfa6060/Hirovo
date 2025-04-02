@@ -1,56 +1,49 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
-# Gerekli paketler
 RUN apt-get update && apt-get install -y openssh-client git
 
-# SSH key kopyala ve izinleri ayarla
+# SSH ayarları
+RUN mkdir -p /root/.ssh
 COPY _devops/ssh/id_rsa_mobileapp /root/.ssh/id_rsa
 RUN chmod 600 /root/.ssh/id_rsa
+RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
-# GitHub hostunu bilinenlere ekle
-RUN mkdir -p /root/.ssh && ssh-keyscan github.com >> /root/.ssh/known_hosts
-
-# Proje dosyalarını kopyala
+# Projeyi içeri al
 COPY . /src/backend
 WORKDIR /src/backend
 
-# ARFBLOCKS CLI kur
+# ArfBlocks CLI
 RUN dotnet tool install --global Arfware.ArfBlocks-cli --version 2.0.0
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
-# Git ayarları
+# Git config
 RUN git config --global pull.rebase false
 RUN git config --global user.name "CI/CD-BOT"
 RUN git config --global user.email "bot@hirovo.com"
 RUN git config --global push.default matching
 RUN git config --global http.sslVerify false
 
-# Frontend WebApp Repo Klonla
+# WebApp'i klonla
 RUN git clone git@github.com:mstfa6060/maden-frontend.git /src/webapp/ --branch dev
 
-# API Dokümantasyonlarını üret (Hirovo + IAM)
+# ArfBlocks CLI üret
 RUN arfblocks-cli exec --file /src/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
 RUN arfblocks-cli exec --file /src/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
 
-# WebApp klasörüne geç
+# WebApp'e git işlemleri
 WORKDIR /src/webapp
 RUN git add .
 RUN git commit -m "API: Hirovo + IAM API docs updated #skipci" || true
 RUN git pull
 RUN git push
 
-# Mobile App Repo Klonla
+# Mobile kopyalama
 RUN git clone git@github.com:mstfa6060/mobileapp.git /src/mobileapp/ --branch dev
-
-# Mobile'a API dokümanlarını kopyala
 WORKDIR /src/mobileapp
 RUN mkdir -p common/hirovo-api/docs/business_modules/hirovo
 RUN mkdir -p common/hirovo-api/docs/base_modules/iam
-
 RUN cp /src/webapp/common/hirovo-api/src/api/business_modules/hirovo/index.ts common/hirovo-api/docs/business_modules/hirovo/index.ts
 RUN cp /src/webapp/common/hirovo-api/src/api/base_modules/iam/index.ts common/hirovo-api/docs/base_modules/iam/index.ts
-
-# Git işlemleri
 RUN git add .
 RUN git commit -m "API: Copied Hirovo + IAM API docs to mobileapp #skipci" || true
 RUN git pull
