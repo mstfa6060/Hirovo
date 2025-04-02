@@ -10,7 +10,7 @@ pipeline {
         stage('API Documentation Generator') {
             steps {
                 withCredentials([usernamePassword(
-                        credentialsId: 'hirovo-git-access-token',
+                        credentialsId: 'dockerhub-credentials',
                         usernameVariable: 'USERNAME',
                         passwordVariable: 'PASSWORD'
                     )]) {
