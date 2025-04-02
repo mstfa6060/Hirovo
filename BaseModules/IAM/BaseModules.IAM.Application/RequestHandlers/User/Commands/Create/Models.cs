@@ -24,6 +24,8 @@ public class RequestModel : IRequestModel
 	public UserType UserType { get; set; }
 	public Guid CompanyId { get; set; }
 	public UserSources UserSource { get; set; } // RegistrationType yerine geçiyor
+	public string? Description { get; set; } // 🆕 Ek örnek alan
+
 }
 
 

@@ -3,6 +3,8 @@ namespace BusinessModules.Hirovo.Application.RequestHandlers.Workers.Commands.Up
 public class RequestModel : IRequestModel
 {
 	public Guid UserId { get; set; }
+	public string? Description { get; set; } // 🆕 Ek örnek alan
+
 	public string? PhoneNumber { get; set; }
 	public DateTime? BirthDate { get; set; }
 	public string? City { get; set; }
