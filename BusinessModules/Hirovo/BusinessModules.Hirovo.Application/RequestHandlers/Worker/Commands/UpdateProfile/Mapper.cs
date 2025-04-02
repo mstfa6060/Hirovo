@@ -1,4 +1,4 @@
-namespace BusinessModules.Worker.Application.RequestHandlers.Workers.Commands.UpdateProfile;
+namespace BusinessModules.Hirovo.Application.RequestHandlers.Workers.Commands.UpdateProfile;
 
 public class Mapper
 {

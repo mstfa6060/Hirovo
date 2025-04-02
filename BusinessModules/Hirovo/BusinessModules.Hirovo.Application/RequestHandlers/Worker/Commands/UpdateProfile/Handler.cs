@@ -1,4 +1,4 @@
-namespace BusinessModules.Worker.Application.RequestHandlers.Workers.Commands.UpdateProfile;
+namespace BusinessModules.Hirovo.Application.RequestHandlers.Workers.Commands.UpdateProfile;
 
 public class Handler : IRequestHandler
 {
@@ -21,7 +21,7 @@ public class Handler : IRequestHandler
 			throw new ArfBlocksValidationException("Kullanıcı bulunamadı.");
 
 		if (request.PhoneNumber != null)
-			user.PhoneNumber  = request.PhoneNumber;
+			user.PhoneNumber = request.PhoneNumber;
 		if (request.BirthDate != null)
 			user.BirthDate = request.BirthDate;
 		if (request.City != null)
