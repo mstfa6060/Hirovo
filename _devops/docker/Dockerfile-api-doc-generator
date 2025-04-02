@@ -1,5 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
+# Gerekli paketler
+RUN apt-get update && apt-get install -y openssh-client git
+
 # Proje dosyalarını kopyala
 COPY . /src/backend
 WORKDIR /src/backend
@@ -9,14 +12,14 @@ RUN dotnet tool install --global Arfware.ArfBlocks-cli --version 2.0.0
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
 # Git ayarları
-ARG git_username
-ARG git_password
-
 RUN git config --global pull.rebase false
 RUN git config --global user.name "CI/CD-BOT"
 RUN git config --global user.email "bot@hirovo.com"
 RUN git config --global push.default matching
 RUN git config --global http.sslVerify false
+
+# SSH için bilinen hostlara GitHub'ı ekle
+RUN mkdir -p /root/.ssh && ssh-keyscan github.com >> /root/.ssh/known_hosts
 
 # Frontend WebApp Repo Klonla
 RUN git clone git@github.com:mstfa6060/maden-frontend.git /src/webapp/ --branch dev
@@ -27,8 +30,6 @@ RUN arfblocks-cli exec --file /src/backend/_devops/arfblocks-cli/iam.arfblocks-c
 
 # WebApp klasörüne geç
 WORKDIR /src/webapp
-
-# GIT işlemine hazırlık
 RUN git add .
 RUN git commit -m "API: Hirovo + IAM API docs updated #skipci" || true
 RUN git pull
@@ -39,7 +40,6 @@ RUN git clone git@github.com:mstfa6060/mobileapp.git /src/mobileapp/ --branch de
 
 # Mobile'a API dokümanlarını kopyala
 WORKDIR /src/mobileapp
-
 RUN mkdir -p common/hirovo-api/docs/business_modules/hirovo
 RUN mkdir -p common/hirovo-api/docs/base_modules/iam
 
