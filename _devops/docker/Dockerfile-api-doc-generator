@@ -1,31 +1,44 @@
+# Base image
 FROM mcr.microsoft.com/dotnet/sdk:8.0
 
-# Gerekli paketler
+# SSH, Git, diğer ihtiyaçlar
 RUN apt-get update && apt-get install -y \
     openssh-client \
     git
 
-# SSH klasörü
+# SSH klasörünü oluştur
 RUN mkdir -p /root/.ssh
 
-# ArfBlocks CLI kurulumu
+# ArfBlocks CLI yükle
 RUN dotnet tool install --global Arfware.ArfBlocks-cli --version 2.0.0
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
-# Build context'e geç
+# Çalışma dizini
 WORKDIR /src/backend
 
-# Kodları kopyala
+# Projeyi kopyala
 COPY . .
 
-# SSH key ve host tanımları sonradan build arg ile değil COPY ile eklenecek
+# SSH key'i kopyala (Jenkins pipeline’dan geliyor)
 COPY _devops/ssh/id_rsa_mobileapp /root/.ssh/id_rsa
 RUN chmod 600 /root/.ssh/id_rsa
+
+# GitHub host’u ekle
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
-# ArfBlocks generate-docs çalıştır (hirovo ve iam ayrı ayrı)
+# ArfBlocks çıktısı için gerekli dizinleri oluştur
 RUN mkdir -p /src/webapp/common/hirovo-api/src/api/business_modules/hirovo
 RUN mkdir -p /src/webapp/common/hirovo-api/src/api/base_modules/iam
 
+# Hirovo API dokümantasyonunu üret
 RUN arfblocks-cli exec --file /src/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
+
+# IAM API dokümantasyonunu üret
 RUN arfblocks-cli exec --file /src/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
+
+# 📦 ÖNEMLİ: Üretilen dokümantasyonu host makineye kopyala
+# webapp → pipeline klasörüne
+RUN cp -r /src/webapp/common /src/backend/_devops/tmp/webapp/
+
+# mobileapp için de varsa buraya eklenir:
+# RUN cp -r /src/mobileapp/common /src/backend/_devops/tmp/mobileapp/
