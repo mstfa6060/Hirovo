@@ -21,7 +21,7 @@ pipeline {
         stage('API Documentation Generator') {
             steps {
                 withCredentials([ 
-                    file(credentialsId: 'mobileapp-deploy-key', variable: 'SSH_KEY_PATH'), 
+                    sshUserPrivateKey(credentialsId: 'mobileapp-deploy-key', keyFileVariable: 'SSH_KEY_PATH', usernameVariable: 'SSH_USERNAME'), 
                     usernamePassword(credentialsId: 'c1cec859-9a72-4a26-a997-a8ce7c6189e9', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
                 ]) {
                     sh '''
@@ -42,7 +42,7 @@ pipeline {
         stage('Push ArfBlocks Docs to Frontend & Mobile') {
             steps {
                 withCredentials([ 
-                    file(credentialsId: 'mobileapp-deploy-key', variable: 'SSH_KEY_PATH'), 
+                    sshUserPrivateKey(credentialsId: 'mobileapp-deploy-key', keyFileVariable: 'SSH_KEY_PATH', usernameVariable: 'SSH_USERNAME'), 
                     usernamePassword(credentialsId: 'c1cec859-9a72-4a26-a997-a8ce7c6189e9', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
                 ])  {
                     sh '''
