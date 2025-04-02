@@ -16,20 +16,22 @@ pipeline {
                         passwordVariable: 'PASSWORD'
                     ),
                     sshUserPrivateKey(
-                        credentialsId: 'mobileapp-ssh-key', // Jenkins'e tanımladığın SSH key ID'si
+                        credentialsId: 'mobileapp-ssh-key',
                         keyFileVariable: 'SSH_KEY'
                     )
                 ]) {
-                    sh """
+                    sh '''
                         mkdir -p _devops/ssh
-                        cp \$SSH_KEY _devops/ssh/id_rsa_mobileapp
+                        base64 "$SSH_KEY" > _devops/ssh/id_rsa_mobileapp.b64
+                        base64 -d _devops/ssh/id_rsa_mobileapp.b64 > _devops/ssh/id_rsa_mobileapp
                         chmod 600 _devops/ssh/id_rsa_mobileapp
-                    """
+                    '''
+
                     sh """
                         docker build \
                         -t registry.git.hirovo.com.tr/arfblocks-cli:$TAG \
-                        --build-arg git_username=\$USERNAME \
-                        --build-arg git_password=\$PASSWORD \
+                        --build-arg git_username=$USERNAME \
+                        --build-arg git_password=$PASSWORD \
                         -f _devops/docker/Dockerfile-api-doc-generator .
                     """
                 }
