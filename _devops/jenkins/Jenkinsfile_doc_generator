@@ -7,17 +7,18 @@ pipeline {
     }
 
     stages {
-     stage('Prepare Web/Mobile Context') {
+stage('Prepare Web/Mobile Context') {
     steps {
         sh '''
             mkdir -p ./_devops/tmp/webapp
             mkdir -p ./_devops/tmp/mobileapp
 
-            cp -r /maden/maden-frontend/. ./_devops/tmp/webapp/
-            cp -r /maden/mobileapp/. ./_devops/tmp/mobileapp/
+            cp -r /maden/maden-frontend/. ./_devops/tmp/webapp/ || echo "webapp yok, dummy olacak"
+            cp -r /maden/mobileapp/. ./_devops/tmp/mobileapp/ || echo "mobileapp yok, dummy olacak"
         '''
     }
 }
+
 
 
         stage('API Documentation Generator') {
