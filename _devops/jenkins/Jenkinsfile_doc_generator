@@ -22,7 +22,7 @@ pipeline {
             steps {
                 withCredentials([ 
                     file(credentialsId: 'mobileapp-deploy-key', variable: 'SSH_KEY_PATH'), 
-                    usernamePassword(credentialsId: 'gitlab-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+                    usernamePassword(credentialsId: 'c1cec859-9a72-4a26-a997-a8ce7c6189e9', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
                 ]) {
                     sh '''
                         mkdir -p _devops/ssh
