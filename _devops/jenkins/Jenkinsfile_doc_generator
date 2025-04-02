@@ -9,20 +9,19 @@ pipeline {
     stages {
         stage('Prepare Web/Mobile Context') {
             steps {
-             sh '''
+                sh '''
   mkdir -p ./_devops/tmp/webapp
   mkdir -p ./_devops/tmp/mobileapp
   cp -r /maden/maden-frontend/common ./_devops/tmp/webapp/
   cp -r /maden/mobileapp/common ./_devops/tmp/mobileapp/
 '''
-
             }
         }
 
         stage('API Documentation Generator') {
             steps {
-                withCredentials([
-                    file(credentialsId: 'mobileapp-ssh-key', variable: 'SSH_KEY_PATH'),
+                withCredentials([ 
+                    file(credentialsId: 'mobileapp-ssh-key', variable: 'SSH_KEY_PATH'), 
                     usernamePassword(credentialsId: 'gitlab-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
                 ]) {
                     sh '''

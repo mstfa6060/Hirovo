@@ -30,7 +30,7 @@ pipeline {
                             docker build \
                             --build-arg MODE=${params.MODE} \
                             -t registry.git.hirovo.com.tr/hirovo/modules-hirovo:$TAG \
-                            -f _devops/docker/Dockerfile-modules-hirovo .
+                            -f _devops/docker/Dockerfile-modules-hirovo . 
 
                             docker push registry.git.hirovo.com.tr/hirovo/modules-hirovo:$TAG
                         """)
