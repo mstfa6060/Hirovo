@@ -39,6 +39,38 @@ pipeline {
             }
         }
 
+        stage('Push ArfBlocks Docs to Frontend & Mobile') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(credentialsId: 'mobileapp-deploy-key', keyFileVariable: 'SSH_KEY_PATH')
+                ]) {
+                    sh '''
+                        export GIT_SSH_COMMAND="ssh -i $SSH_KEY_PATH -o StrictHostKeyChecking=no"
+
+                        cd _devops/tmp/webapp
+                        git init
+                        git remote add origin git@github.com:mstfa6060/maden-frontend.git
+                        git checkout -b main
+                        git config user.name "CI/CD-BOT"
+                        git config user.email "bot@hirovo.com"
+                        git add .
+                        git commit -m "📦 ArfBlocks API dokümantasyonu güncellendi - $TAG"
+                        git push origin main --force
+
+                        cd ../mobileapp
+                        git init
+                        git remote add origin git@github.com:mstfa6060/mobileapp.git
+                        git checkout -b main
+                        git config user.name "CI/CD-BOT"
+                        git config user.email "bot@hirovo.com"
+                        git add .
+                        git commit -m "📦 Mobil API dokümantasyonu güncellendi - $TAG"
+                        git push origin main --force
+                    '''
+                }
+            }
+        }
+
         stage('Clear Produced Dangling Containers/Layers') {
             steps {
                 sh("docker images | grep '<none>' | awk '{print \$3}' | xargs -I {} docker rmi -f {} || true")
