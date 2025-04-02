@@ -18,18 +18,6 @@ pipeline {
             }
         }
 
-        stage('Download SSH Key') {
-            steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'mobileapp-deploy-key', keyFileVariable: 'SSH_KEY_PATH')]) {
-                    sh '''
-                        cp $SSH_KEY_PATH ./id_rsa_mobileapp
-                        chmod 600 ./id_rsa_mobileapp
-                    '''
-                    archiveArtifacts artifacts: 'id_rsa_mobileapp', fingerprint: true
-                }
-            }
-        }
-
         stage('API Documentation Generator') {
             steps {
                 withCredentials([ 
@@ -59,15 +47,9 @@ pipeline {
             }
         }
 
-        stage('Send Success Mail') {
+        stage('Send Success Message') {
             steps {
                 sh("echo '✅ Hirovo API Docs Pipeline Success'")
-                // mail(
-                //     body: "✔ Hirovo: ArfBlocks API dokümantasyonu başarıyla oluşturuldu ve frontend/mobile repo'lara gönderildi. Tag: ${TAG}",
-                //     from: 'bot@hirovo.com',
-                //     subject: 'Jenkins: Hirovo API Docs Oluşturma Başarılı',
-                //     to: 'dev@hirovo.com'
-                // )
             }
         }
     }
@@ -78,12 +60,6 @@ pipeline {
         }
         failure {
             sh("echo '❌ Pipeline Failed'")
-            // mail(
-            //     body: "🚨 HATA: Hirovo API dokümantasyonu oluşturulamadı! Tag: ${TAG}",
-            //     from: 'bot@hirovo.com',
-            //     subject: 'Jenkins - Uyarı: Hirovo API Docs Oluşturma Başarısız',
-            //     to: 'dev@hirovo.com'
-            // )
         }
     }
 }
