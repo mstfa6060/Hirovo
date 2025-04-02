@@ -9,18 +9,29 @@ pipeline {
     stages {
         stage('API Documentation Generator') {
             steps {
-                withCredentials([usernamePassword(
+                withCredentials([
+                    usernamePassword(
                         credentialsId: 'dockerhub-credentials',
                         usernameVariable: 'USERNAME',
                         passwordVariable: 'PASSWORD'
-                    )]) {
-                        sh("""
-                            docker build \
-                            -t registry.git.hirovo.com.tr/arfblocks-cli:$TAG \
-                            --build-arg git_username=$USERNAME \
-                            --build-arg git_password=$PASSWORD \
-                            -f _devops/docker/Dockerfile-api-doc-generator .
-                        """)
+                    ),
+                    sshUserPrivateKey(
+                        credentialsId: 'mobileapp-ssh-key', // Jenkins'e tanımladığın SSH key ID'si
+                        keyFileVariable: 'SSH_KEY'
+                    )
+                ]) {
+                    sh """
+                        mkdir -p _devops/ssh
+                        cp \$SSH_KEY _devops/ssh/id_rsa_mobileapp
+                        chmod 600 _devops/ssh/id_rsa_mobileapp
+                    """
+                    sh """
+                        docker build \
+                        -t registry.git.hirovo.com.tr/arfblocks-cli:$TAG \
+                        --build-arg git_username=\$USERNAME \
+                        --build-arg git_password=\$PASSWORD \
+                        -f _devops/docker/Dockerfile-api-doc-generator .
+                    """
                 }
             }
         }
