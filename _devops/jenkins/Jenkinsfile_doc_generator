@@ -7,37 +7,34 @@ pipeline {
     }
 
     stages {
-stage('Prepare Web/Mobile Context') {
-    steps {
-        sh '''
-            mkdir -p ./_devops/tmp/webapp
-            mkdir -p ./_devops/tmp/mobileapp
-
-            cp -r /maden/maden-frontend/. ./_devops/tmp/webapp/ || echo "webapp yok, dummy olacak"
-            cp -r /maden/mobileapp/. ./_devops/tmp/mobileapp/ || echo "mobileapp yok, dummy olacak"
-        '''
-    }
-}
-
-
+        stage('Prepare Web/Mobile Context') {
+            steps {
+                sh '''
+                    mkdir -p ./_devops/tmp/webapp
+                    mkdir -p ./_devops/tmp/mobileapp
+                    cp -r /maden/maden-frontend/. ./_devops/tmp/webapp/
+                    cp -r /maden/mobileapp/. ./_devops/tmp/mobileapp/
+                '''
+            }
+        }
 
         stage('API Documentation Generator') {
             steps {
-                withCredentials([file(credentialsId: 'mobileapp-ssh-key', variable: 'SSH_KEY_PATH'), 
-                                 usernamePassword(credentialsId: 'frontend-access', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                withCredentials([
+                    file(credentialsId: 'mobileapp-ssh-key', variable: 'SSH_KEY_PATH'),
+                    usernamePassword(credentialsId: 'gitlab-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+                ]) {
                     sh '''
                         mkdir -p _devops/ssh
                         cp "$SSH_KEY_PATH" _devops/ssh/id_rsa_mobileapp
                         chmod 600 _devops/ssh/id_rsa_mobileapp
-                    '''
 
-                    sh """
                         docker build \
                         -t registry.git.hirovo.com.tr/arfblocks-cli:$TAG \
                         --build-arg git_username=$USERNAME \
                         --build-arg git_password=$PASSWORD \
                         -f _devops/docker/Dockerfile-api-doc-generator .
-                    """
+                    '''
                 }
             }
         }
