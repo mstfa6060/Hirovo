@@ -30,6 +30,7 @@ RUN git config --global http.sslVerify false
 COPY _devops/tmp/webapp /src/webapp
 COPY _devops/tmp/mobileapp /src/mobileapp
 
+
 # Eksik dizinleri oluştur (ArfBlocks çıktısı için)
 RUN mkdir -p /src/webapp/common/hirovo-api/src/api/business_modules/hirovo
 RUN mkdir -p /src/webapp/common/hirovo-api/src/api/base_modules/iam
