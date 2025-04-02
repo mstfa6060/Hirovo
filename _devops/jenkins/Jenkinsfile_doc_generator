@@ -87,13 +87,13 @@ pipeline {
 }
 
 
-        stage('Clear Produced Dangling Containers/Layers') {
-            steps {
-                sh("docker images | grep '<none>' | awk '{print \$3}' | xargs -I {} docker rmi -f {} || true")
-                sh("docker images | grep 'registry.git.hirovo.com.tr' | awk '{print \$3}' | xargs -I {} docker rmi -f {} || true")
-                sh("docker system prune --all -f")
-            }
-        }
+        // stage('Clear Produced Dangling Containers/Layers') {
+        //     steps {
+        //         sh("docker images | grep '<none>' | awk '{print \$3}' | xargs -I {} docker rmi -f {} || true")
+        //         sh("docker images | grep 'registry.git.hirovo.com.tr' | awk '{print \$3}' | xargs -I {} docker rmi -f {} || true")
+        //         sh("docker system prune --all -f")
+        //     }
+        // }
 
         stage('Send Success Message') {
             steps {
