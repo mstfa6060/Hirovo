@@ -17,6 +17,17 @@ pipeline {
 '''
             }
         }
+stage('Download SSH Key') {
+    steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'mobileapp-ssh-key', keyFileVariable: 'SSH_KEY_PATH')]) {
+            sh '''
+            cp $SSH_KEY_PATH ./id_rsa_mobileapp
+            chmod 600 ./id_rsa_mobileapp
+            '''
+            archiveArtifacts artifacts: 'id_rsa_mobileapp', fingerprint: true
+        }
+    }
+}
 
         stage('API Documentation Generator') {
             steps {
