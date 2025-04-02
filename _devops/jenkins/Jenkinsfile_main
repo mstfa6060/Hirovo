@@ -80,12 +80,12 @@ pipeline {
         stage('Send Success') {
             steps {
                 sh("echo '✅ Hirovo Main Pipeline Success'")
-                mail(
-                    body: "✔ Hirovo: Tüm modüller başarıyla build edildi, pushlandı ve staging'e deploy edildi. Tag: ${TAG}",
-                    from: 'bot@hirovo.com',
-                    subject: 'Jenkins: Hirovo Backend Pipeline Başarılı',
-                    to: 'dev@hirovo.com'
-                )
+                // mail(
+                //     body: "✔ Hirovo: Tüm modüller başarıyla build edildi, pushlandı ve staging'e deploy edildi. Tag: ${TAG}",
+                //     from: 'bot@hirovo.com',
+                //     subject: 'Jenkins: Hirovo Backend Pipeline Başarılı',
+                //     to: 'dev@hirovo.com'
+                // )
             }
         }
     }
@@ -96,12 +96,12 @@ pipeline {
         }
         failure {
             sh("echo '❌ Pipeline Failed'")
-            mail(
-                body: "🚨 HATA: Hirovo pipeline başarısız oldu! Tag: ${TAG}",
-                from: 'bot@hirovo.com',
-                subject: 'Jenkins - Uyarı: Hirovo Backend Pipeline Başarısız',
-                to: 'dev@hirovo.com'
-            )
+            // mail(
+            //     body: "🚨 HATA: Hirovo pipeline başarısız oldu! Tag: ${TAG}",
+            //     from: 'bot@hirovo.com',
+            //     subject: 'Jenkins - Uyarı: Hirovo Backend Pipeline Başarısız',
+            //     to: 'dev@hirovo.com'
+            // )
         }
     }
 }

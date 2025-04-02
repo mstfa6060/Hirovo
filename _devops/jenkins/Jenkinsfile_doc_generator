@@ -50,12 +50,12 @@ pipeline {
         stage('Send Success Mail') {
             steps {
                 sh("echo '✅ Hirovo API Docs Pipeline Success'")
-                mail(
-                    body: "✔ Hirovo: ArfBlocks API dokümantasyonu başarıyla oluşturuldu ve frontend/mobile repo'lara gönderildi. Tag: ${TAG}",
-                    from: 'bot@hirovo.com',
-                    subject: 'Jenkins: Hirovo API Docs Oluşturma Başarılı',
-                    to: 'dev@hirovo.com'
-                )
+                // mail(
+                //     body: "✔ Hirovo: ArfBlocks API dokümantasyonu başarıyla oluşturuldu ve frontend/mobile repo'lara gönderildi. Tag: ${TAG}",
+                //     from: 'bot@hirovo.com',
+                //     subject: 'Jenkins: Hirovo API Docs Oluşturma Başarılı',
+                //     to: 'dev@hirovo.com'
+                // )
             }
         }
     }
@@ -66,12 +66,12 @@ pipeline {
         }
         failure {
             sh("echo '❌ Pipeline Failed'")
-            mail(
-                body: "🚨 HATA: Hirovo API dokümantasyonu oluşturulamadı! Tag: ${TAG}",
-                from: 'bot@hirovo.com',
-                subject: 'Jenkins - Uyarı: Hirovo API Docs Oluşturma Başarısız',
-                to: 'dev@hirovo.com'
-            )
+            // mail(
+            //     body: "🚨 HATA: Hirovo API dokümantasyonu oluşturulamadı! Tag: ${TAG}",
+            //     from: 'bot@hirovo.com',
+            //     subject: 'Jenkins - Uyarı: Hirovo API Docs Oluşturma Başarısız',
+            //     to: 'dev@hirovo.com'
+            // )
         }
     }
 }
