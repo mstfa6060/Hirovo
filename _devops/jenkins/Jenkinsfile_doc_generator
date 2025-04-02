@@ -42,7 +42,7 @@ pipeline {
         stage('Push ArfBlocks Docs to Frontend & Mobile') {
             steps {
                 withCredentials([
-                    sshUserPrivateKey(credentialsId: 'mobileapp-deploy-key', keyFileVariable: 'SSH_KEY_PATH')
+                    sshUserPrivateKey(credentialsId: 'f7209768-5b82-474a-968c-2c9fe0aea416', keyFileVariable: 'SSH_KEY_PATH')
                 ]) {
                     sh '''
                         export GIT_SSH_COMMAND="ssh -i $SSH_KEY_PATH -o StrictHostKeyChecking=no"
