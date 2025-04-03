@@ -63,4 +63,5 @@ RUN dotnet run --project /maden/backend/Jobs/SpecialPurpose/DevTasks/ErrorCodeEx
 
 # 📦 Çıktıyı dışa aktarmak için: host’a kopyalanabilir hale getir
 RUN mkdir -p /maden/backend/_devops/tmp/webapp/common && \
-    cp -r /maden/webapp/common/* /maden/backend/_devops/tmp/webapp/common/
+    mkdir -p /maden/webapp/common && \
+    if [ "$(ls -A /maden/webapp/common)" ]; then cp -r /maden/webapp/common/* /maden/backend/_devops/tmp/webapp/common/; fi
