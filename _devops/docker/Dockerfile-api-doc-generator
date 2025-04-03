@@ -45,9 +45,12 @@ RUN chmod 600 /root/.ssh/id_rsa
 # GitHub host’u ekle
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
-# ArfBlocks çıktısı için gerekli dizinleri oluştur
-RUN mkdir -p /maden/webapp/common/hirovo-api/src/api/business_modules/hirovo
-RUN mkdir -p /maden/webapp/common/hirovo-api/src/api/base_modules/iam
+# ArfBlocks çıktılarının yazılacağı klasörleri oluştur
+RUN mkdir -p /webapp/common/hirovo-api/src/api/business_modules/hirovo && \
+    mkdir -p /webapp/common/hirovo-api/src/api/base_modules/iam && \
+    mkdir -p /webapp/common/hirovo-api/src/errors/locales/modules/common && \
+    mkdir -p /webapp/common/hirovo-api/src/errors/locales/modules/workers
+
 
 # Hirovo API dokümantasyonunu üret
 RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
