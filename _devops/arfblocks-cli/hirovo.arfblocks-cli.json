@@ -13,7 +13,7 @@
         },
         {
           "key": "output",
-          "value": "/maden/backend/webapp/common/hirovo-api/src/api/business_modules/hirovo"
+          "value": "/maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/business_modules/hirovo"
         },
         {
           "key": "endpointBaseRoute",
@@ -25,7 +25,7 @@
         },
         {
           "key": "errorLocales",
-          "value": "[{\"moduleUniqueName\":\"common\",\"filePath\":\"/maden/backend/webapp/common/hirovo-api/src/errors/locales/modules/common\"},{\"moduleUniqueName\":\"workers\",\"filePath\":\"/maden/backend/webapp/common/hirovo-api/src/errors/locales/modules/workers\"}]"
+          "value": "[{\"moduleUniqueName\":\"common\",\"filePath\":\"/maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/common\"},{\"moduleUniqueName\":\"workers\",\"filePath\":\"/maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/workers\"}]"
         },
         {
           "key": "outputImports",

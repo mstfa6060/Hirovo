@@ -19,30 +19,28 @@ RUN chmod 600 /root/.ssh/id_rsa && ssh-keyscan github.com >> /root/.ssh/known_ho
 # ArfBlocks CLI yükle
 RUN dotnet tool install --global Arfware.ArfBlocks-cli --version 2.0.0
 
-# 👇 ÖNEMLİ: CLI'yi erişilebilir hale getir
+# CLI erişimi için PATH
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
+# Kodları kopyala
 WORKDIR /maden/backend
 COPY . .
 
-# Web ve Mobile için klasör oluştur
+# ArfBlocks çıktısı için geçici klasörler
 RUN mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/business_modules/hirovo && \
     mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/base_modules/iam && \
     mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/common && \
-    mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/workers && \
-    mkdir -p /maden/backend/webapp/common/hirovo-api/src/api/business_modules/hirovo && \
-    mkdir -p /maden/backend/webapp/common/hirovo-api/src/errors/locales/modules/common && \
-    mkdir -p /maden/backend/webapp/common/hirovo-api/src/errors/locales/modules/workers
+    mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/workers
 
-# ArfBlocks ile endpoint üret
+# ArfBlocks CLI ile endpointleri üret
 RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
 RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
 
-# Error messages
+# Hata mesajlarını export et
 RUN dotnet run --project /maden/backend/Jobs/SpecialPurpose/DevTasks/ErrorCodeExporter/ErrorCodeExporter.csproj || true
 
-# Son kopyalama işlemi
-RUN mkdir -p /maden/backend/_devops/tmp/webapp/common && \
-    if [ -d "/maden/backend/webapp/common" ] && [ "$(ls -A /maden/backend/webapp/common)" ]; then \
-    cp -r /maden/backend/webapp/common/* /maden/backend/_devops/tmp/webapp/common/; \
+# ⬅️ DOĞRU: ArfBlocks çıktısını gerçek webapp klasörüne kopyala
+RUN mkdir -p /maden/backend/webapp/common && \
+    if [ -d "/maden/backend/_devops/tmp/webapp/common" ] && [ "$(ls -A /maden/backend/_devops/tmp/webapp/common)" ]; then \
+    cp -r /maden/backend/_devops/tmp/webapp/common/* /maden/backend/webapp/common/; \
     fi
