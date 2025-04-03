@@ -1,14 +1,32 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-EXPOSE 8080
-
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
-COPY . .
-RUN dotnet restore Hirovo.sln
-RUN dotnet publish ./BusinessModules/Hirovo/BusinessModules.Hirovo.Api/BusinessModules.Hirovo.Api.csproj -c Release -o /app/publish
 
-FROM base AS final
-WORKDIR /app
-COPY --from=build /app/publish .
+
+# Copy everything else and build
+
+COPY . /src
+WORKDIR /src
+RUN dotnet restore
+RUN dotnet build
+
+# Test
+
+ARG MODE="DEFAULT"
+WORKDIR /src/BusinessModules/Hirovo/BusinessModules.Hirovo.Application.Test
+RUN dotnet run || $([ "${MODE}" = "SKIPTEST" ]) 
+
+# Publish
+
+WORKDIR /src/BusinessModules/Hirovo/BusinessModules.Hirovo.Api/
+RUN dotnet publish -c release -o /Output --no-restore
+
+# Final stage / image
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /App
+COPY --from=build /Output .
+
+RUN apt update && apt install tzdata -y
+ENV TZ="Europe/Istanbul"
+
+EXPOSE 8080
 ENTRYPOINT ["dotnet", "BusinessModules.Hirovo.Api.dll"]
