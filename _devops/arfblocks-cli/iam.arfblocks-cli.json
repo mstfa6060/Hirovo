@@ -13,7 +13,7 @@
         },
         {
           "key": "output",
-          "value": "../webapp/common/hirovo-api/src/api/base_modules/iam"
+          "value": "/maden/webapp/common/hirovo-api/src/api/base_modules/iam"
         },
         {
           "key": "outputImports",
