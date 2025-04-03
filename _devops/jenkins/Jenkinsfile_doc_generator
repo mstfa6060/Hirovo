@@ -19,7 +19,10 @@ pipeline {
 
     stage('API Documentation Generator') {
       steps {
-        withCredentials([file(credentialsId: 'ssh-key-hirovo', variable: 'SSH_KEY_PATH')]) {
+        withCredentials([ 
+                    sshUserPrivateKey(credentialsId: 'mobileapp-deploy-key', keyFileVariable: 'SSH_KEY_PATH', usernameVariable: 'SSH_USERNAME'), 
+                    usernamePassword(credentialsId: 'c1cec859-9a72-4a26-a997-a8ce7c6189e9', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+                ]) {
           sh '''
             mkdir -p _devops/ssh
             cp $SSH_KEY_PATH _devops/ssh/id_rsa_mobileapp
@@ -33,7 +36,10 @@ pipeline {
 
     stage('Push ArfBlocks Docs to Frontend & Mobile') {
       steps {
-        withCredentials([file(credentialsId: 'ssh-key-hirovo', variable: 'SSH_KEY_PATH')]) {
+        withCredentials([ 
+                    sshUserPrivateKey(credentialsId: 'mobileapp-deploy-key', keyFileVariable: 'SSH_KEY_PATH', usernameVariable: 'SSH_USERNAME'), 
+                    usernamePassword(credentialsId: 'c1cec859-9a72-4a26-a997-a8ce7c6189e9', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+                ]) {
           sh '''
             export GIT_SSH_COMMAND="ssh -i $SSH_KEY_PATH -o StrictHostKeyChecking=no"
 
