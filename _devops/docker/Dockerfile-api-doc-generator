@@ -44,7 +44,7 @@ RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/hirovo.arfblo
 RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
 
 # Error Code Exporter
-RUN dotnet run --project /maden/backend/Jobs/SpecialPurpose/DevTasks/ErrorCodeExporter/
+RUN dotnet run --project /maden/backend/Jobs/SpecialPurpose/DevTasks/ErrorCodeExporter/ErrorCodeExporter.csproj
 
 # 📦 Çıktıyı dışa aktarmak için: host’a kopyalanabilir hale getir
 RUN mkdir -p /maden/backend/_devops/tmp/webapp/common && \
