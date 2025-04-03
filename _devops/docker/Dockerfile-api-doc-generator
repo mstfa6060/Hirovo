@@ -25,6 +25,8 @@ WORKDIR /maden/backend  # Bu dizin sunucundaki backend projesi
 
 # Projeyi kopyala
 COPY . .
+COPY Jobs/SpecialPurpose/DevTasks/ErrorCodeExporter /maden/backend/Jobs/SpecialPurpose/DevTasks/ErrorCodeExporter
+
 
 # SSH key’i kopyala (Jenkins pipeline’dan geliyor)
 COPY _devops/ssh/id_rsa_mobileapp /root/.ssh/id_rsa
