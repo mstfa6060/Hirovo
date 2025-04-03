@@ -1,46 +1,51 @@
+# Temel imaj
 FROM mcr.microsoft.com/dotnet/sdk:8.0
 
-# Sisteme gerekli bağımlılıkları kur
+# Ortam değişkenleri
+ENV DOTNET_CLI_HOME=/tmp
+
+# Gerekli sistem paketlerini yükle
 RUN apt-get update && apt-get install -y \
     git \
     openssh-client
 
-# ArfBlocks CLI kurulumu
-RUN dotnet tool install --global Arfware.ArfBlocks-cli --version 2.0.0
-ENV PATH="${PATH}:/root/.dotnet/tools"
-
-# Git ayarları
+# SSH ve Git ayarları
 RUN git config --global user.name "CI/CD-BOT" && \
     git config --global user.email "bot@hirovo.com" && \
     git config --global push.default matching && \
     git config --global pull.rebase false && \
-    git config --global http.sslVerify false
+    git config --global http.sslVerify false && \
+    mkdir -p /root/.ssh
 
-# SSH klasörü
-RUN mkdir -p /root/.ssh
+# SSH key'i host'tan al (Jenkins tarafından sağlanıyor)
 COPY _devops/ssh/id_rsa_mobileapp /root/.ssh/id_rsa
-RUN chmod 600 /root/.ssh/id_rsa && ssh-keyscan github.com >> /root/.ssh/known_hosts
+RUN chmod 600 /root/.ssh/id_rsa && \
+    ssh-keyscan github.com >> /root/.ssh/known_hosts
 
-# Çalışma dizini
+# ArfBlocks CLI kur
+RUN dotnet tool install --global Arfware.ArfBlocks-cli --version 2.0.0
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+# Çalışma klasörüne geç
 WORKDIR /maden/backend
+
+# Proje dosyalarını kopyala
 COPY . .
 
-# API dokümantasyonu çıktısı için dizinleri oluştur
-RUN mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/business_modules/hirovo \
-    && mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/base_modules/iam \
-    && mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/common \
-    && mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/workers
+# Hedef frontend/mobil klasörleri oluştur (eksikse hata almamak için)
+RUN mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/business_modules/hirovo && \
+    mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/base_modules/iam && \
+    mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/common && \
+    mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/workers
 
-# ArfBlocks CLI çalıştır (Hirovo modülü)
+# ArfBlocks CLI ile dokümantasyonu üret
 RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
-
-# ArfBlocks CLI çalıştır (IAM modülü)
 RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
 
-# Hata kodlarını export et
+# Error code dosyalarını export et
 RUN dotnet run --project /maden/backend/Jobs/SpecialPurpose/DevTasks/ErrorCodeExporter/ErrorCodeExporter.csproj || true
 
-# Frontend common klasörünü staging'e taşı
+# Üretilen dokümantasyonu geçici klasöre kopyala (Jenkins dışa aktarım yapacak)
 RUN mkdir -p /maden/backend/_devops/tmp/webapp/common && \
     if [ -d "/maden/backend/webapp/common" ] && [ "$(ls -A /maden/backend/webapp/common)" ]; then \
     cp -r /maden/backend/webapp/common/* /maden/backend/_devops/tmp/webapp/common/; \
