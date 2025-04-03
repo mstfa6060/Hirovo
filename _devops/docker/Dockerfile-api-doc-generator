@@ -30,7 +30,9 @@ RUN mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/busines
     mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/base_modules/iam && \
     mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/common && \
     mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/workers && \
-    mkdir -p /maden/backend/webapp/common/hirovo-api/src/api/business_modules/hirovo
+    mkdir -p /maden/backend/webapp/common/hirovo-api/src/api/business_modules/hirovo && \
+    mkdir -p /maden/backend/webapp/common/hirovo-api/src/errors/locales/modules/common && \
+    mkdir -p /maden/backend/webapp/common/hirovo-api/src/errors/locales/modules/workers
 
 # ArfBlocks ile endpoint üret
 RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
