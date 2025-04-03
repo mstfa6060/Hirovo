@@ -33,6 +33,9 @@ COPY Common/Definitions /maden/backend/Common/Definitions
 COPY Common/Domain /maden/backend/Common/Domain
 COPY BusinessModules /maden/backend/BusinessModules
 COPY BaseModules /maden/backend/BaseModules
+COPY _devops/arfblocks-cli/hirovo.arfblocks-cli.json /maden/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
+COPY _devops/arfblocks-cli/iam.arfblocks-cli.json /maden/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
+
 
 
 # SSH key’i kopyala (Jenkins pipeline’dan geliyor)
