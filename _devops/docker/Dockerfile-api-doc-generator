@@ -1,46 +1,46 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0
 
-# SSH ve GIT için gerekli paketler
+# Sisteme gerekli bağımlılıkları kur
 RUN apt-get update && apt-get install -y \
     git \
     openssh-client
 
-# GIT yapılandırması
+# ArfBlocks CLI kurulumu
+RUN dotnet tool install --global Arfware.ArfBlocks-cli --version 2.0.0
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+# Git ayarları
 RUN git config --global user.name "CI/CD-BOT" && \
     git config --global user.email "bot@hirovo.com" && \
     git config --global push.default matching && \
     git config --global pull.rebase false && \
     git config --global http.sslVerify false
 
-# ArfBlocks CLI kurulumu
-RUN dotnet tool install --global Arfware.ArfBlocks-cli --version 2.0.0
-
-ENV PATH="${PATH}:/root/.dotnet/tools"
-
-# SSH ayarları
+# SSH klasörü
 RUN mkdir -p /root/.ssh
 COPY _devops/ssh/id_rsa_mobileapp /root/.ssh/id_rsa
-RUN chmod 600 /root/.ssh/id_rsa
-RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
+RUN chmod 600 /root/.ssh/id_rsa && ssh-keyscan github.com >> /root/.ssh/known_hosts
 
-# Çalışma klasörü
+# Çalışma dizini
 WORKDIR /maden/backend
-
-# Proje dosyaları kopyalanıyor
 COPY . .
 
-# ArfBlocks CLI output path'leri oluşturuluyor
+# API dokümantasyonu çıktısı için dizinleri oluştur
 RUN mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/business_modules/hirovo \
     && mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/base_modules/iam \
     && mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/common \
     && mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/workers
 
-# ArfBlocks CLI ve Hata Mesajı Export çalıştırılıyor
+# ArfBlocks CLI çalıştır (Hirovo modülü)
 RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
-RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
-RUN dotnet run --project /maden/backend/Jobs/SpecialPurpose/DevTasks/ErrorCodeExporter/ErrorCodeExporter.csproj
 
-# Export edilen dosyaları push için kopyalıyoruz
+# ArfBlocks CLI çalıştır (IAM modülü)
+RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
+
+# Hata kodlarını export et
+RUN dotnet run --project /maden/backend/Jobs/SpecialPurpose/DevTasks/ErrorCodeExporter/ErrorCodeExporter.csproj || true
+
+# Frontend common klasörünü staging'e taşı
 RUN mkdir -p /maden/backend/_devops/tmp/webapp/common && \
     if [ -d "/maden/backend/webapp/common" ] && [ "$(ls -A /maden/backend/webapp/common)" ]; then \
     cp -r /maden/backend/webapp/common/* /maden/backend/_devops/tmp/webapp/common/; \

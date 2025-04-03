@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         TAG = "${BUILD_NUMBER}_COM${env.GIT_COMMIT.substring(0, 6)}"
-        NAMESPACE = 'maden-staging'
     }
 
     stages {
@@ -20,8 +19,8 @@ pipeline {
 
         stage('API Documentation Generator') {
             steps {
-                withCredentials([ 
-                    sshUserPrivateKey(credentialsId: 'mobileapp-deploy-key', keyFileVariable: 'SSH_KEY_PATH', usernameVariable: 'SSH_USERNAME'), 
+                withCredentials([
+                    sshUserPrivateKey(credentialsId: 'mobileapp-deploy-key', keyFileVariable: 'SSH_KEY_PATH', usernameVariable: 'SSH_USERNAME'),
                     usernamePassword(credentialsId: 'c1cec859-9a72-4a26-a997-a8ce7c6189e9', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
                 ]) {
                     sh '''
@@ -41,9 +40,8 @@ pipeline {
 
         stage('Push ArfBlocks Docs to Frontend & Mobile') {
             steps {
-                withCredentials([ 
-                    sshUserPrivateKey(credentialsId: 'mobileapp-deploy-key', keyFileVariable: 'SSH_KEY_PATH', usernameVariable: 'SSH_USERNAME'), 
-                    usernamePassword(credentialsId: 'c1cec859-9a72-4a26-a997-a8ce7c6189e9', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
+                withCredentials([
+                    sshUserPrivateKey(credentialsId: 'mobileapp-deploy-key', keyFileVariable: 'SSH_KEY_PATH', usernameVariable: 'SSH_USERNAME')
                 ]) {
                     sh '''
                         export GIT_SSH_COMMAND="ssh -i $SSH_KEY_PATH -o StrictHostKeyChecking=no"
