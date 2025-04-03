@@ -1,7 +1,7 @@
 {
   "minCliVersion": "2.0.0",
   "project": "Hirovo",
-  "description": "ArfBlocks ile Hirovo modülüne ait API endpointlerini ve hata mesajlarını üretir",
+  "description": "Hirovo modülüne ait API dokümantasyonu",
   "company": "mstfa6060",
   "commands": [
     {
@@ -26,6 +26,26 @@
         {
           "key": "errorLocales",
           "value": "[{\"moduleUniqueName\":\"common\",\"filePath\":\"/maden/backend/webapp/common/hirovo-api/src/errors/locales/modules/common\"},{\"moduleUniqueName\":\"workers\",\"filePath\":\"/maden/backend/webapp/common/hirovo-api/src/errors/locales/modules/workers\"}]"
+        },
+        {
+          "key": "outputImports",
+          "value": "// Imports \nimport { AppConfig, api as axios } from 'hirovo-config'; \nimport { ApiService } from '../../../../services';"
+        },
+        {
+          "key": "outputTypes",
+          "value": "// Custom Types \ntype Guid = string; \ntype Double = number;"
+        },
+        {
+          "key": "outputSettings",
+          "value": "// Settings..."
+        },
+        {
+          "key": "nameSpace",
+          "value": "HirovoAPI"
+        },
+        {
+          "key": "requestUrl",
+          "value": "AppConfig.HirovoUrl"
         }
       ]
     }
