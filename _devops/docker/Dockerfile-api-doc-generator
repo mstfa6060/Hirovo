@@ -21,12 +21,16 @@ RUN git config --global push.default matching
 RUN git config --global http.sslVerify false
 
 # Çalışma dizini
-WORKDIR /maden/backend  # Bu dizin sunucundaki backend projesi
+WORKDIR /maden/backend
 
 # Projeyi kopyala
 COPY . .
 
-# SSH key’i kopyala (Jenkins pipeline’dan geliyor)
+# ArfBlocks CLI config dosyalarını kopyala
+COPY _devops/arfblocks-cli/hirovo.arfblocks-cli.json /maden/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
+COPY _devops/arfblocks-cli/iam.arfblocks-cli.json /maden/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
+
+# SSH key’i kopyala
 COPY _devops/ssh/id_rsa_mobileapp /root/.ssh/id_rsa
 RUN chmod 600 /root/.ssh/id_rsa
 
@@ -45,9 +49,10 @@ RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/hirovo.arfblo
 # IAM API dokümantasyonunu üret
 RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
 
-# Error Code Exporter
+# Error Code Exporter çalıştır
 RUN dotnet run --project /maden/backend/Jobs/SpecialPurpose/DevTasks/ErrorCodeExporter/ErrorCodeExporter.csproj
 
-# 📦 Çıktıyı dışa aktarmak için: host’a kopyalanabilir hale getir
+# Çıktıyı frontend'e aktarılabilir hale getir
 RUN mkdir -p /maden/backend/_devops/tmp/webapp/common && \
-    if [ -d "/webapp/common" ] && [ "$(ls -A /webapp/common)" ]; then cp -r /webapp/common/* /maden/backend/_devops/tmp/webapp/common/; fi
+    mkdir -p /maden/webapp/common && \
+    if [ -d "/maden/webapp/common" ] && [ "$(ls -A /maden/webapp/common)" ]; then cp -r /maden/webapp/common/* /maden/backend/_devops/tmp/webapp/common/; fi

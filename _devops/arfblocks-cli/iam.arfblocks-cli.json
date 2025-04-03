@@ -13,11 +13,11 @@
         },
         {
           "key": "output",
-          "value": "/maden/webapp/common/hirovo-api/src/api/base_modules/iam"
+          "value": "./webapp/common/hirovo-api/src/api/base_modules/iam"
         },
         {
           "key": "outputImports",
-          "value": "// Imports\nimport { AppConfig, api as axios } from 'hirovo-config';\nimport { ApiService } from '../../../services';"
+          "value": "// Imports\nimport { AppConfig, api as axios } from 'hirovo-config';\nimport { ApiService } from './././services';"
         },
         {
           "key": "outputTypes",
@@ -25,7 +25,7 @@
         },
         {
           "key": "outputSettings",
-          "value": "// Settings..."
+          "value": "// Settings."
         },
         {
           "key": "nameSpace",
