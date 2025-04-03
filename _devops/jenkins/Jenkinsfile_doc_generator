@@ -12,7 +12,7 @@ pipeline {
                 sh '''
                     mkdir -p ./_devops/tmp/webapp
                     mkdir -p ./_devops/tmp/mobileapp
-                    cp -r /maden/webapp/common ./_devops/tmp/webapp/
+                    cp -r /maden/maden-frontend/common ./_devops/tmp/webapp/
                     cp -r /maden/mobileapp/common ./_devops/tmp/mobileapp/
                 '''
             }
@@ -33,7 +33,7 @@ pipeline {
                         -t registry.git.hirovo.com.tr/arfblocks-cli:$TAG \
                         --build-arg git_username=$USERNAME \
                         --build-arg git_password=$PASSWORD \
-                        -f _devops/docker/Dockerfile-api-doc-generator .  # Dockerfile'ı doğru yerden kullanıyoruz
+                        -f _devops/docker/Dockerfile-api-doc-generator .
                     '''
                 }
             }
@@ -44,7 +44,7 @@ pipeline {
                 withCredentials([ 
                     sshUserPrivateKey(credentialsId: 'mobileapp-deploy-key', keyFileVariable: 'SSH_KEY_PATH', usernameVariable: 'SSH_USERNAME'), 
                     usernamePassword(credentialsId: 'c1cec859-9a72-4a26-a997-a8ce7c6189e9', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')
-                ])  {
+                ]) {
                     sh '''
                         export GIT_SSH_COMMAND="ssh -i $SSH_KEY_PATH -o StrictHostKeyChecking=no"
 
