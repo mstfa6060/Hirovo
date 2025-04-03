@@ -1,15 +1,10 @@
-# Temel imaj
 FROM mcr.microsoft.com/dotnet/sdk:8.0
 
-# Ortam değişkenleri
-ENV DOTNET_CLI_HOME=/tmp
-
-# Gerekli sistem paketlerini yükle
 RUN apt-get update && apt-get install -y \
     git \
     openssh-client
 
-# SSH ve Git ayarları
+# Git ayarları
 RUN git config --global user.name "CI/CD-BOT" && \
     git config --global user.email "bot@hirovo.com" && \
     git config --global push.default matching && \
@@ -17,35 +12,33 @@ RUN git config --global user.name "CI/CD-BOT" && \
     git config --global http.sslVerify false && \
     mkdir -p /root/.ssh
 
-# SSH key'i host'tan al (Jenkins tarafından sağlanıyor)
+# SSH anahtar dosyasını kopyala
 COPY _devops/ssh/id_rsa_mobileapp /root/.ssh/id_rsa
-RUN chmod 600 /root/.ssh/id_rsa && \
-    ssh-keyscan github.com >> /root/.ssh/known_hosts
+RUN chmod 600 /root/.ssh/id_rsa && ssh-keyscan github.com >> /root/.ssh/known_hosts
 
-# ArfBlocks CLI kur
+# ArfBlocks CLI yükle
 RUN dotnet tool install --global Arfware.ArfBlocks-cli --version 2.0.0
+
+# 👇 ÖNEMLİ: CLI'yi erişilebilir hale getir
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
-# Çalışma klasörüne geç
 WORKDIR /maden/backend
-
-# Proje dosyalarını kopyala
 COPY . .
 
-# Hedef frontend/mobil klasörleri oluştur (eksikse hata almamak için)
+# Web ve Mobile için klasör oluştur
 RUN mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/business_modules/hirovo && \
     mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/base_modules/iam && \
     mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/common && \
     mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/workers
 
-# ArfBlocks CLI ile dokümantasyonu üret
+# ArfBlocks ile endpoint üret
 RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
 RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
 
-# Error code dosyalarını export et
+# Error messages
 RUN dotnet run --project /maden/backend/Jobs/SpecialPurpose/DevTasks/ErrorCodeExporter/ErrorCodeExporter.csproj || true
 
-# Üretilen dokümantasyonu geçici klasöre kopyala (Jenkins dışa aktarım yapacak)
+# Son kopyalama işlemi
 RUN mkdir -p /maden/backend/_devops/tmp/webapp/common && \
     if [ -d "/maden/backend/webapp/common" ] && [ "$(ls -A /maden/backend/webapp/common)" ]; then \
     cp -r /maden/backend/webapp/common/* /maden/backend/_devops/tmp/webapp/common/; \
