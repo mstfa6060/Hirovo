@@ -25,16 +25,7 @@
         },
         {
           "key": "errorLocales",
-          "value": [
-            {
-              "moduleUniqueName": "common",
-              "filePath": "/maden/backend/webapp/common/hirovo-api/src/errors/locales/modules/common"
-            },
-            {
-              "moduleUniqueName": "workers",
-              "filePath": "/maden/backend/webapp/common/hirovo-api/src/errors/locales/modules/workers"
-            }
-          ]
+          "value": "[{\"moduleUniqueName\":\"common\",\"filePath\":\"/maden/backend/webapp/common/hirovo-api/src/errors/locales/modules/common\"},{\"moduleUniqueName\":\"workers\",\"filePath\":\"/maden/backend/webapp/common/hirovo-api/src/errors/locales/modules/workers\"}]"
         }
       ]
     }
