@@ -1,17 +1,42 @@
 {
-  "command": "generate-docs",
-  "targetProjectPath": "BusinessModules/Hirovo/BusinessModules.Hirovo.Application/BusinessModules.Hirovo.Application.csproj",
-  "outputFilePath": "/maden/backend/webapp/common/hirovo-api/src/api/business_modules/hirovo",
-  "endpointBaseRoute": "/hirovo",
-  "docLanguage": "tr",
-  "errorLocales": [
+  "minCliVersion": "2.0.0",
+  "project": "Hirovo",
+  "description": "ArfBlocks ile Hirovo modülüne ait API endpointlerini ve hata mesajlarını üretir",
+  "company": "mstfa6060",
+  "commands": [
     {
-      "moduleUniqueName": "common",
-      "filePath": "/maden/backend/webapp/common/hirovo-api/src/errors/locales/modules/common"
-    },
-    {
-      "moduleUniqueName": "workers",
-      "filePath": "/maden/backend/webapp/common/hirovo-api/src/errors/locales/modules/workers"
+      "name": "generate-docs",
+      "parameters": [
+        {
+          "key": "targetProject",
+          "value": "BusinessModules/Hirovo/BusinessModules.Hirovo.Application/BusinessModules.Hirovo.Application.csproj"
+        },
+        {
+          "key": "output",
+          "value": "/maden/backend/webapp/common/hirovo-api/src/api/business_modules/hirovo"
+        },
+        {
+          "key": "endpointBaseRoute",
+          "value": "/hirovo"
+        },
+        {
+          "key": "docLanguage",
+          "value": "tr"
+        },
+        {
+          "key": "errorLocales",
+          "value": [
+            {
+              "moduleUniqueName": "common",
+              "filePath": "/maden/backend/webapp/common/hirovo-api/src/errors/locales/modules/common"
+            },
+            {
+              "moduleUniqueName": "workers",
+              "filePath": "/maden/backend/webapp/common/hirovo-api/src/errors/locales/modules/workers"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
