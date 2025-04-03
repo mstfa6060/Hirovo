@@ -30,6 +30,10 @@ COPY BusinessModules/Hirovo /maden/backend/BusinessModules/Hirovo
 COPY BaseModules/IAM /maden/backend/BaseModules/IAM
 COPY Common/Services /maden/backend/Common/Services
 COPY Common/Definitions /maden/backend/Common/Definitions
+COPY Common/Domain /maden/backend/Common/Domain
+COPY BusinessModules /maden/backend/BusinessModules
+COPY BaseModules /maden/backend/BaseModules
+
 
 # SSH key’i kopyala (Jenkins pipeline’dan geliyor)
 COPY _devops/ssh/id_rsa_mobileapp /root/.ssh/id_rsa
