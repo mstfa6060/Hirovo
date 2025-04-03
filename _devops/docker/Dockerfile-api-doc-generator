@@ -40,7 +40,5 @@ RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/iam.arfblocks
 RUN dotnet run --project /maden/backend/Jobs/SpecialPurpose/DevTasks/ErrorCodeExporter/ErrorCodeExporter.csproj || true
 
 # ⬅️ DOĞRU: ArfBlocks çıktısını gerçek webapp klasörüne kopyala
-RUN mkdir -p /maden/backend/webapp/common && \
-    if [ -d "/maden/backend/_devops/tmp/webapp/common" ] && [ "$(ls -A /maden/backend/_devops/tmp/webapp/common)" ]; then \
-    cp -r /maden/backend/_devops/tmp/webapp/common/* /maden/backend/webapp/common/; \
-    fi
+RUN rm -rf /maden/backend/webapp/common && \
+    cp -r /maden/backend/_devops/tmp/webapp/common /maden/backend/webapp/common
