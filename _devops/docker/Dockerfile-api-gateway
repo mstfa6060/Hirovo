@@ -1,19 +1,28 @@
+# Temel ASP.NET çalışma zamanı
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 5000
+
+# Build aşaması
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /DockerSource
+WORKDIR /src
 
-# Copy everything else and build
-COPY ./Gateways/Api/Gateways.ApiGateway.Api .
-WORKDIR /DockerSource
+# API Gateway projesini ve ocelot.json dosyasını kopyala
+COPY ../../Gateways/Api/Gateways.ApiGateway.Api ./Gateways.ApiGateway.Api
+
+# 🔥 ocelot.json dosyasını da publish'e dahil etmek için ekstra COPY gerekebilir
+COPY ../../Gateways/Api/Gateways.ApiGateway.Api/ocelot.json ./Gateways.ApiGateway.Api/ocelot.json
+
+# Restore ve publish işlemleri
+WORKDIR /src/Gateways.ApiGateway.Api
 RUN dotnet restore
-RUN dotnet publish -c release -o /Output --no-restore
+RUN dotnet publish -c Release -o /app/publish
 
-# Final stage / image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
-WORKDIR /App
-COPY --from=build /Output .
+# Final image
+FROM base AS final
+WORKDIR /app
 
-RUN apt update && apt install tzdata -y
-ENV TZ="Europe/Istanbul"
+# Yayınlanan dosyaları kopyala
+COPY --from=build /app/publish .
 
-EXPOSE 8080
 ENTRYPOINT ["dotnet", "Gateways.ApiGateway.Api.dll"]

@@ -1,8 +1,8 @@
 {
-  "minCliVersion": "2.0.0",
-  "project": "Hirovo Platform - Hirovo Modülü",
-  "description": "Hirovo modülünün ArfBlocks ile frontend dokümantasyonunu oluşturur.",
-  "company": "Hirovo",
+  "minCliVersion": "1.2.3",
+  "project": "Example Todo App",
+  "description": "Generate api docs and generete example CRUDL code",
+  "company": "Arfware/Labs",
   "commands": [
     {
       "name": "generate-docs",
@@ -13,15 +13,15 @@
         },
         {
           "key": "output",
-          "value": "/webapp/common/hirovo-api/src/api/business_modules/hirovo"
+          "value": "../webapp/common/maden-api/src/api/business_modules/hirovo"
         },
         {
           "key": "outputImports",
-          "value": "// Imports\nimport { AppConfig, api as axios } from 'hirovo-config';\nimport { ApiService } from '../../../services';"
+          "value": "// Imports \nimport { AppConfig, api as axios } from 'maden-config'; \nimport { ApiService } from '../../../services';"
         },
         {
           "key": "outputTypes",
-          "value": "// Custom Types\ntype Guid = string;\ntype Double = number;"
+          "value": "// Custom Types \ntype Guid = string; \ntype Double = number;"
         },
         {
           "key": "outputSettings",
