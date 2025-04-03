@@ -13,20 +13,20 @@ RUN mkdir -p /root/.ssh
 RUN dotnet tool install --global Arfware.ArfBlocks-cli --version 2.0.0
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
-# GIT ayarları
-ARG git_username
-ARG git_password
+# Git ayarları
 RUN git config --global user.name "CI/CD-BOT"
 RUN git config --global user.email "bot@hirovo.com"
 RUN git config --global pull.rebase false
 RUN git config --global push.default matching
 RUN git config --global http.sslVerify false
 
-# Backend kaynaklarını kopyala
-WORKDIR /src/backend
+# Çalışma dizini
+WORKDIR /maden/backend  # Bu dizin sunucundaki backend projesi
+
+# Projeyi kopyala
 COPY . .
 
-# SSH key'i kopyala (Jenkins pipeline’dan geliyor)
+# SSH key’i kopyala (Jenkins pipeline’dan geliyor)
 COPY _devops/ssh/id_rsa_mobileapp /root/.ssh/id_rsa
 RUN chmod 600 /root/.ssh/id_rsa
 
@@ -34,17 +34,18 @@ RUN chmod 600 /root/.ssh/id_rsa
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
 # ArfBlocks çıktısı için gerekli dizinleri oluştur
-RUN mkdir -p /src/webapp/common/hirovo-api/src/api/business_modules/hirovo
-RUN mkdir -p /src/webapp/common/hirovo-api/src/api/base_modules/iam
+RUN mkdir -p /maden/webapp/common/hirovo-api/src/api/business_modules/hirovo
+RUN mkdir -p /maden/webapp/common/hirovo-api/src/api/base_modules/iam
 
-# Hirovo modülü ArfBlocks dökümanını oluştur
-RUN arfblocks-cli exec --file /src/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
+# Hirovo API dokümantasyonunu üret
+RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
 
-# IAM modülü ArfBlocks dökümanını oluştur
-RUN arfblocks-cli exec --file /src/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
+# IAM API dokümantasyonunu üret
+RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
 
-# ErrorCode Export işlemini çalıştır
-RUN dotnet run --project Jobs/SpecialPurpose/DevTasks/ErrorCodeExporter/
+# Error Code Exporter
+RUN dotnet run --project /maden/backend/Jobs/SpecialPurpose/DevTasks/ErrorCodeExporter/
 
-# Üretilen dosyaları frontend ve mobile dizinlerine kopyala
-RUN cp -r /src/webapp/common /src/backend/_devops/tmp/webapp/
+# 📦 Çıktıyı dışa aktarmak için: host’a kopyalanabilir hale getir
+RUN mkdir -p /maden/backend/_devops/tmp/webapp/common && \
+    cp -r /maden/webapp/common/* /maden/backend/_devops/tmp/webapp/common/
