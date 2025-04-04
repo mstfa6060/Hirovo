@@ -45,6 +45,17 @@ pipeline {
             }
         }
 
+        stage('Çıktıları Host’a Kopyala') {
+            steps {
+                sh '''
+                    docker run --rm \
+                        -v $PWD/_devops/tmp/webapp:/out \
+                        registry.git.hirovo.com.tr/arfblocks-cli:$TAG \
+                        cp -r /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/business_modules/hirovo /out || true
+                '''
+            }
+        }
+
         stage('Push ArfBlocks Dokümantasyonları') {
             steps {
                 withCredentials([
