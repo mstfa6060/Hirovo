@@ -36,8 +36,8 @@ RUN mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/busines
     mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/workers
 
 # ArfBlocks CLI çalıştırackend/_devops/tmp/webapp/common/* /maden/backend/webapp/c
-RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
-RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
+# RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
+# RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
 
 # ErrorCodeExporter çalıştır (hata alsa bile devam et)
 RUN dotnet run --project /maden/backend/Jobs/SpecialPurpose/DevTasks/ErrorCodeExporter/ErrorCodeExporter.csproj || true

@@ -1,107 +1,107 @@
 pipeline {
-    agent any
+  agent any
+  environment {
+    SSH_KEY_PATH = credentials('ssh-key-maden')
+  }
 
-    environment {
-        TAG = "${BUILD_NUMBER}-${env.GIT_COMMIT.substring(0, 6)}"
+  stages {
+    stage('Hazırlık - Web/Mobile klasörlerini oluştur') {
+      steps {
+        sh '''
+          mkdir -p ./_devops/tmp/webapp
+          mkdir -p ./_devops/tmp/mobileapp
+          cp -r /maden/maden-frontend/common ./_devops/tmp/webapp/
+          cp -r /maden/mobileapp/common ./_devops/tmp/mobileapp/
+        '''
+      }
     }
 
-    stages {
-        stage('Hazırlık - Web/Mobile klasörlerini oluştur') {
-            steps {
-                sh '''
-                    mkdir -p ./_devops/tmp/webapp
-                    mkdir -p ./_devops/tmp/mobileapp
-                    cp -r /maden/maden-frontend/common ./_devops/tmp/webapp/
-                    cp -r /maden/mobileapp/common ./_devops/tmp/mobileapp/
-                '''
-            }
+    stage('Docker Image Build - Docs Generator') {
+      steps {
+        withCredentials([file(credentialsId: 'ssh-key-maden', variable: 'SSH_KEY_PATH')]) {
+          sh '''
+            mkdir -p _devops/ssh
+            cp $SSH_KEY_PATH _devops/ssh/id_rsa_mobileapp
+            chmod 600 _devops/ssh/id_rsa_mobileapp
+
+            docker build -t registry.git.hirovo.com.tr/arfblocks-cli:${BUILD_NUMBER}-${GIT_COMMIT:0:7} \
+              --build-arg git_username=mstfaock \
+              --build-arg git_password=${GIT_PASSWORD} \
+              -f _devops/docker/Dockerfile-api-doc-generator .
+          '''
         }
-
-        stage('Docker Image Build - Docs Generator') {
-            steps {
-                withCredentials([
-                    sshUserPrivateKey(
-                        credentialsId: 'mobileapp-deploy-key',
-                        keyFileVariable: 'SSH_KEY_PATH',
-                        usernameVariable: 'SSH_USERNAME'
-                    ),
-                    usernamePassword(
-                        credentialsId: 'dockerhub-credentials',
-                        usernameVariable: 'USERNAME',
-                        passwordVariable: 'PASSWORD'
-                    )
-                ]) {
-                    sh '''
-                        mkdir -p _devops/ssh
-                        cp "$SSH_KEY_PATH" _devops/ssh/id_rsa_mobileapp
-                        chmod 600 _devops/ssh/id_rsa_mobileapp
-
-                        docker build -t registry.git.hirovo.com.tr/arfblocks-cli:$TAG \
-                        --build-arg git_username=$USERNAME \
-                        --build-arg git_password=$PASSWORD \
-                        -f _devops/docker/Dockerfile-api-doc-generator .
-                    '''
-                }
-            }
-        }
-
-        stage('Push ArfBlocks Dokümantasyonları') {
-            steps {
-                withCredentials([
-                    sshUserPrivateKey(
-                        credentialsId: 'mobileapp-deploy-key',
-                        keyFileVariable: 'SSH_KEY_PATH',
-                        usernameVariable: 'SSH_USERNAME'
-                    )
-                ]) {
-                    sh '''
-                        export GIT_SSH_COMMAND="ssh -i $SSH_KEY_PATH -o StrictHostKeyChecking=no"
-
-                        # Frontend (webapp) güncelle
-                        cd _devops/tmp/webapp
-                        git init
-                        git remote remove origin || true
-                        git remote add origin git@github.com:mstfa6060/maden-frontend.git
-                        git checkout -B main
-                        git config user.name "CI/CD-BOT"
-                        git config user.email "bot@hirovo.com"
-                        if [ -n "$(git status --porcelain)" ]; then
-                            git add .
-                            git commit -m "📦 API dokümantasyonu güncellendi - $TAG"
-                            git push origin main --force
-                        fi
-
-                        # Mobil güncelle
-                        cd ../mobileapp
-                        git init
-                        git remote remove origin || true
-                        git remote add origin git@github.com:mstfa6060/mobileapp.git
-                        git checkout -B main
-                        git config user.name "CI/CD-BOT"
-                        git config user.email "bot@hirovo.com"
-                        if [ -n "$(git status --porcelain)" ]; then
-                            git add .
-                            git commit -m "📦 Mobil API dokümantasyonu güncellendi - $TAG"
-                            git push origin main --force
-                        fi
-                    '''
-                }
-            }
-        }
-
-        stage('Bitti') {
-            steps {
-                echo '✅ Jenkinsfile_doc_generator başarıyla tamamlandı.'
-            }
-        }
+      }
     }
 
-    post {
-        always {
-            echo '⏹ Pipeline Completed'
-        }
-        failure {
-            echo '❌ Pipeline Failed'
-        }
+    stage('ArfBlocks CLI Dokümantasyonu Oluştur') {
+      steps {
+        sh '''
+          docker run --rm \
+            -v $(pwd):/maden/backend \
+            registry.git.hirovo.com.tr/arfblocks-cli:${BUILD_NUMBER}-${GIT_COMMIT:0:7} \
+            arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
+
+          docker run --rm \
+            -v $(pwd):/maden/backend \
+            registry.git.hirovo.com.tr/arfblocks-cli:${BUILD_NUMBER}-${GIT_COMMIT:0:7} \
+            arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
+        '''
+      }
     }
+
+    stage('Error Code Exporter') {
+      steps {
+        sh '''
+          docker run --rm \
+            -v $(pwd):/maden/backend \
+            registry.git.hirovo.com.tr/arfblocks-cli:${BUILD_NUMBER}-${GIT_COMMIT:0:7} \
+            dotnet run --project /maden/backend/Jobs/SpecialPurpose/DevTasks/ErrorCodeExporter/ErrorCodeExporter.csproj || true
+        '''
+      }
+    }
+
+    stage('Push ArfBlocks Dokümantasyonları') {
+      steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-maden', keyFileVariable: 'KEY')]) {
+          sh '''
+            export GIT_SSH_COMMAND="ssh -i $KEY -o StrictHostKeyChecking=no"
+
+            cd _devops/tmp/webapp
+            git init
+            git remote remove origin || true
+            git remote add origin git@github.com:mstfa6060/maden-frontend.git
+            git checkout -B main
+            git config user.name "CI/CD-BOT"
+            git config user.email "bot@hirovo.com"
+            git add .
+            git commit -m "ArfBlocks Web Dokümantasyon Güncellemesi [ci skip]" || true
+            git push -f origin main
+
+            cd ../mobileapp
+            git init
+            git remote remove origin || true
+            git remote add origin git@github.com:mstfa6060/mobileapp.git
+            git checkout -B main
+            git config user.name "CI/CD-BOT"
+            git config user.email "bot@hirovo.com"
+            git add .
+            git commit -m "ArfBlocks Mobil Dokümantasyon Güncellemesi [ci skip]" || true
+            git push -f origin main
+          '''
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      echo "⏹ Pipeline Completed"
+    }
+    success {
+      echo "✅ Jenkinsfile_doc_generator başarıyla tamamlandı."
+    }
+    failure {
+      echo "❌ Jenkinsfile_doc_generator başarısız oldu."
+    }
+  }
 }
