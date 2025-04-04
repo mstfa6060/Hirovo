@@ -62,7 +62,7 @@ pipeline {
                     docker run --rm \
                         -v $PWD/_devops/tmp/webapp:/out \
                         registry.git.hirovo.com.tr/arfblocks-cli:$TAG \
-                        cp -r /maden/backend/webapp/common/hirovo-api/src/api/base_modules/iam /out || true
+                        cp -r /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/base_modules/iam /out || true
                 '''
             }
         }
