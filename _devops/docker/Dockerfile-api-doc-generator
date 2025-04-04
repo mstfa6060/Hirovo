@@ -1,5 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0
 
+# Gerekli paketler
 RUN apt-get update && apt-get install -y \
     git \
     openssh-client
@@ -12,37 +13,35 @@ RUN git config --global user.name "CI/CD-BOT" && \
     git config --global http.sslVerify false && \
     mkdir -p /root/.ssh
 
-# SSH anahtar dosyasını kopyala
+# SSH key
 COPY _devops/ssh/id_rsa_mobileapp /root/.ssh/id_rsa
 RUN chmod 600 /root/.ssh/id_rsa && ssh-keyscan github.com >> /root/.ssh/known_hosts
 
-# ArfBlocks CLI yükle
+# ArfBlocks CLI
 RUN dotnet tool install --global Arfware.ArfBlocks-cli --version 2.0.0
-
-# CLI erişimi
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
+# Proje dosyaları
 WORKDIR /maden/backend
 COPY . .
 COPY BusinessModules ./BusinessModules
 COPY BaseModules ./BaseModules
 COPY _devops ./_devops
 
-
-# Geçici klasörleri oluştur
+# Geçici klasörler
 RUN mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/business_modules/hirovo && \
     mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/base_modules/iam && \
     mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/common && \
     mkdir -p /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/errors/locales/modules/workers
 
-# ArfBlocks CLI çalıştırackend/_devops/tmp/webapp/common/* /maden/backend/webapp/c
-# RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
-# RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
+# ArfBlocks CLI çıktısı üret
+RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/hirovo.arfblocks-cli.json
+RUN arfblocks-cli exec --file /maden/backend/_devops/arfblocks-cli/iam.arfblocks-cli.json
 
-# ErrorCodeExporter çalıştır (hata alsa bile devam et)
+# ErrorCodeExporter
 RUN dotnet run --project /maden/backend/Jobs/SpecialPurpose/DevTasks/ErrorCodeExporter/ErrorCodeExporter.csproj || true
 
-# 📁 Çıktıyı `webapp` klasörüne kopyala
+# Üretilen dokümantasyonu webapp klasörüne kopyala
 RUN mkdir -p /maden/backend/webapp/common && \
     if [ -d "/maden/backend/_devops/tmp/webapp/common" ] && [ "$(ls -A /maden/backend/_devops/tmp/webapp/common)" ]; then \
     cp -r /maden/backend/_devops/tmp/webapp/common/* /maden/backend/webapp/common/; \
