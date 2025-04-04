@@ -18,7 +18,8 @@ pipeline {
 
     stage('Docker Image Build - Docs Generator') {
       steps {
-        withCredentials([file(credentialsId: 'mobileapp-deploy-key', variable: 'SSH_KEY_PATH')]) {
+        withCredentials([sshUserPrivateKey(credentialsId: 'mobileapp-deploy-key', keyFileVariable: 'SSH_KEY_PATH')]) {
+
           sh '''
             mkdir -p _devops/ssh
             cp $SSH_KEY_PATH _devops/ssh/id_rsa_mobileapp
