@@ -45,27 +45,28 @@ pipeline {
             }
         }
 
-        stage('Çıktıları Host’a Kopyala - Hirovo') {
-            steps {
-                sh '''
-                    docker run --rm \
-                        -v $PWD/_devops/tmp/webapp:/out \
-                        registry.git.hirovo.com.tr/arfblocks-cli:$TAG \
-                        cp -r /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/business_modules/hirovo /out || true
-                '''
-            }
-        }
+stage('Çıktıları Host’a Kopyala - Hirovo') {
+    steps {
+        sh '''
+            docker run --rm \
+                -v $PWD/_devops/tmp/webapp:/out \
+                registry.git.hirovo.com.tr/arfblocks-cli:$TAG \
+                cp -r /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/business_modules/hirovo /out || true
+        '''
+    }
+}
 
-        stage('Çıktıları Host’a Kopyala - IAM') {
-            steps {
-                sh '''
-                    docker run --rm \
-                        -v $PWD/_devops/tmp/webapp:/out \
-                        registry.git.hirovo.com.tr/arfblocks-cli:$TAG \
-                        cp -r /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/base_modules/iam /out || true
-                '''
-            }
-        }
+stage('Çıktıları Host’a Kopyala - IAM') {
+    steps {
+        sh '''
+            docker run --rm \
+                -v $PWD/_devops/tmp/webapp:/out \
+                registry.git.hirovo.com.tr/arfblocks-cli:$TAG \
+                cp -r /maden/backend/webapp/common/hirovo-api/src/api/base_modules/iam /out || true
+        '''
+    }
+}
+
 
         stage('Push ArfBlocks Dokümantasyonları') {
             steps {
