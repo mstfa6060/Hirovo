@@ -74,14 +74,19 @@ pipeline {
                 withCredentials([
                     sshUserPrivateKey(
                         credentialsId: 'mobileapp-deploy-key',
-                        keyFileVariable: 'SSH_KEY_PATH',
-                        usernameVariable: 'SSH_USERNAME'
+                        keyFileVariable: 'SSH_KEY_MOBILEAPP'
+                    ),
+                    sshUserPrivateKey(
+                        credentialsId: 'frontend-deploy-key',
+                        keyFileVariable: 'SSH_KEY_FRONTEND'
                     )
                 ]) {
                     sh '''
-                        export GIT_SSH_COMMAND="ssh -i $SSH_KEY_PATH -o StrictHostKeyChecking=no"
+                        echo "🔐 MobileApp SSH Key: $SSH_KEY_MOBILEAPP"
+                        echo "🔐 Frontend SSH Key: $SSH_KEY_FRONTEND"
 
-                        # Frontend (webapp) güncelle
+                        # Frontend push
+                        export GIT_SSH_COMMAND="ssh -i $SSH_KEY_FRONTEND -o StrictHostKeyChecking=no"
                         cd _devops/tmp/webapp
                         git init
                         git remote remove origin || true
@@ -95,7 +100,8 @@ pipeline {
                             git push origin main --force
                         fi
 
-                        # Mobil güncelle
+                        # Mobileapp push
+                        export GIT_SSH_COMMAND="ssh -i $SSH_KEY_MOBILEAPP -o StrictHostKeyChecking=no"
                         cd ../mobileapp
                         git init
                         git remote remove origin || true
