@@ -45,6 +45,16 @@ pipeline {
                     '''
                 }
             }
+        }   
+
+        stage('Temizleme - ArfBlocks bozuk dosyaları sil') {
+        steps {
+        sh '''
+            echo "🧹 ArfBlocks gereksiz dosyalar temizleniyor..."
+            find ./_devops/tmp/webapp -type f ! -name "*.ts" -delete
+            find ./_devops/tmp/mobileapp -type f ! -name "*.ts" -delete
+        '''
+           }
         }
 
         stage('Çıktıları Host’a Kopyala - Hirovo') {
