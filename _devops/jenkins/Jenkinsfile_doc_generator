@@ -9,6 +9,9 @@ pipeline {
         stage('Hazırlık - Web/Mobile klasörlerini oluştur') {
             steps {
                 sh '''
+                    rm -rf ./_devops/tmp/webapp || true
+                    rm -rf ./_devops/tmp/mobileapp || true
+
                     mkdir -p ./_devops/tmp/webapp
                     mkdir -p ./_devops/tmp/mobileapp
                     cp -r /maden/maden-frontend/common ./_devops/tmp/webapp/
@@ -45,13 +48,24 @@ pipeline {
             }
         }
 
-        stage('Çıktıları Host’a Kopyala') {
+        stage('Çıktıları Host’a Kopyala - Hirovo') {
             steps {
                 sh '''
                     docker run --rm \
                         -v $PWD/_devops/tmp/webapp:/out \
                         registry.git.hirovo.com.tr/arfblocks-cli:$TAG \
-                        cp -r /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/business_modules/hirovo /out || true
+                        bash -c "cp -r /maden/backend/_devops/tmp/webapp/common/hirovo-api/src/api/business_modules/hirovo /out/common/hirovo-api/src/api/business_modules/ || true"
+                '''
+            }
+        }
+
+        stage('Çıktıları Host’a Kopyala - IAM') {
+            steps {
+                sh '''
+                    docker run --rm \
+                        -v $PWD/_devops/tmp/webapp:/out \
+                        registry.git.hirovo.com.tr/arfblocks-cli:$TAG \
+                        bash -c "cp -r /maden/backend/webapp/common/hirovo-api/src/api/base_modules/iam /out/common/hirovo-api/src/api/base_modules/ || true"
                 '''
             }
         }
